@@ -2,7 +2,7 @@
 // @copyright           2014, Damian Ho
 // @description         Trade.tf Freemium
 // @grant               none
-// @include             http*://www.trade.tf/listings/*
+// @include             /^https?:\/\/www\.trade\.tf\/listings\/\d+/
 // @name                Trade.tf Reloader
 // @namespace           localhost
 // @run-at              document-end
