@@ -6,6 +6,7 @@
 // @name                Trade.tf Reloader
 // @namespace           localhost
 // @run-at              document-end
+// @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.user.js
 // @version             1.1.2
 // ==/UserScript==
 
