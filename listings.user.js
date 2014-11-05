@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.2
+// @version             1.1.3
 // ==/UserScript==
 
 (function () {
@@ -54,11 +54,23 @@
 
     var input = document.createElement("input");
     sessionStorage.minProfit = sessionStorage.minProfit || 5;
-    input.id = "minProfit";
     input.setAttribute("min", 1);
-    input.setAttribute("onkeyup", "if(isFinite(this.value)){sessionStorage.setItem('minProfit', this.value);}"); //todo: add instant update
+    input.setAttribute("onkeyup", "if(isFinite(this.value)){sessionStorage.setItem('minProfit', this.value);}");
     input.setAttribute("value", sessionStorage.getItem("minProfit"));
     input.setAttribute("style", "float: right; width: 50px; margin-right: 5px; text-align: center;");
+    input.addEventListener("keyup", function() {
+        if (isFinite(this.value) && this.value.length) {
+            sessionStorage.setItem("minProfit", this.value);
+            var profit = document.querySelectorAll("span.trade-profit");
+            for (var a = 0; a < profit.length; a++) {
+                var percent = profit[a].firstChild.nodeValue;
+                if (+percent.split("%")[0] >= sessionStorage.getItem("minProfit"))
+                    profit[a].parentNode.parentNode.parentNode.style.display = "";
+                else
+                    hide(profit[a], 3);
+            }
+        }
+    })
     document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(input);
     addButton("paused", "Paused", false);
     addButton("alert", "Alert", false);
@@ -80,9 +92,9 @@
     var profit = document.querySelectorAll("span.trade-profit");
     for (var a = 0; a < profit.length; a++) {
         var percent = profit[a].firstChild.nodeValue;
-        if (!(+percent.split("%")[0] >= sessionStorage.getItem("minProfit")))
+        if (!JSON.parse(sessionStorage.getItem("unconfirmed")) && percent === "n/a")
             hide(profit[a], 3);
-        else if (!JSON.parse(sessionStorage.getItem("unconfirmed")) && percent === "n/a")
+        else if (+percent.split("%")[0] < sessionStorage.getItem("minProfit"))
             hide(profit[a], 3);
     }
 
@@ -127,19 +139,19 @@
     }
 
     if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
-        var latest = document.getElementsByClassName("profit-good");
+        var latest = document.querySelectorAll("span.trade-profit");
         if (latest.length) {
             for (a = 0; a < latest.length; a++) {
-                if (latest[a].parentNode.parentNode.style.display !== "none")
+                if (latest[a].parentNode.parentNode.parentNode.style.display !== "none")
                     break;
             }
             if (a !== latest.length) {
-                var tradeId = latest[a].nextElementSibling.firstElementChild.firstElementChild.firstElementChild.href.replace(/\d/g, ""),
+                var tradeId = latest[a].parentNode.nextElementSibling.firstElementChild.firstElementChild.firstElementChild.href.replace(/\d/g, ""),
                     audio = new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav");
                 if ((sessionStorage.getItem("latest") || 0) !== tradeId) {
                     sessionStorage.setItem("latest", tradeId);
                     audio.play();
-                    latest[a].parentNode.nextElementSibling.style.backgroundColor = "#628C2A";
+                    latest[a].parentNode.parentNode.nextElementSibling.style.backgroundColor = "#628C2A";
                 }
             }
         }
