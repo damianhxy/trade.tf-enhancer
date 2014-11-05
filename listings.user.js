@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.3
+// @version             1.1.4
 // ==/UserScript==
 
 (function () {
@@ -55,7 +55,7 @@
     var input = document.createElement("input");
     sessionStorage.minProfit = sessionStorage.minProfit || 5;
     input.setAttribute("min", 1);
-    input.setAttribute("onkeyup", "if(isFinite(this.value)){sessionStorage.setItem('minProfit', this.value);}");
+    input.setAttribute("onkeyup", "if(isFinite(this.value) && this.value.length){sessionStorage.setItem('minProfit', this.value);}");
     input.setAttribute("value", sessionStorage.getItem("minProfit"));
     input.setAttribute("style", "float: right; width: 50px; margin-right: 5px; text-align: center;");
     document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(input);
@@ -72,20 +72,20 @@
 
     if (JSON.parse(sessionStorage.getItem("paused"))) {
         window.document.title = "Trade.tf: Paused";
-        sessionStorage.removeItem("latest");
         return;
     }
 
     input.addEventListener("keyup", function() {
         if (isFinite(this.value) && this.value.length) {
-            sessionStorage.setItem("minProfit", this.value);
             var profit = document.querySelectorAll("span.trade-profit");
             for (var a = 0; a < profit.length; a++) {
                 var percent = profit[a].firstChild.nodeValue;
                 if (+percent.split("%")[0] >= sessionStorage.getItem("minProfit"))
-                    profit[a].parentNode.parentNode.parentNode.style.display = "";
+                    if (profit[a].parentNode.parentNode.parentNode.style.display === "none")
+                        profit[a].parentNode.parentNode.parentNode.style.display = "";
                 else
-                    hide(profit[a], 3);
+                    if (!(JSON.parse(sessionStorage.getItem("unconfirmed")) && percent === "n/a"))
+                        hide(profit[a], 3);
             }
         }
     });
@@ -93,7 +93,7 @@
     var profit = document.querySelectorAll("span.trade-profit");
     for (var a = 0; a < profit.length; a++) {
         var percent = profit[a].firstChild.nodeValue;
-        if (!JSON.parse(sessionStorage.getItem("unconfirmed")) && percent === "n/a")
+        if (!(JSON.parse(sessionStorage.getItem("unconfirmed")) && percent === "n/a"))
             hide(profit[a], 3);
         else if (+percent.split("%")[0] < sessionStorage.getItem("minProfit"))
             hide(profit[a], 3);
