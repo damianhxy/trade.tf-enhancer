@@ -65,8 +65,8 @@
     addButton("caution", "Caution", true);
 
     input.addEventListener("keyup", function() {
-        if (isFinite(this.value) && this.value.length) {
-            sessionStorage.setItem("minProfit", this.value);
+        sessionStorage.setItem("minProfit", this.value);
+        if (isFinite(this.value) && this.value.length && !JSON.parse(sessionStorage.getItem("paused"))) {
             var profit = document.querySelectorAll("span.trade-profit");
             for (var a = 0; a < profit.length; a++) {
                 var percent = profit[a].firstChild.nodeValue;
@@ -89,7 +89,6 @@
         if (+percent.split("%")[0] < sessionStorage.getItem("minProfit"))
             setDisplay(profit[a], 3, "none");
     }
-
     if (!JSON.parse(sessionStorage.getItem("caution"))) {
         var caution = document.getElementsByClassName("label-warning");
         for (a = 0; a < caution.length; a++)
