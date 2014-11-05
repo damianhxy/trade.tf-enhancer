@@ -58,19 +58,6 @@
     input.setAttribute("onkeyup", "if(isFinite(this.value)){sessionStorage.setItem('minProfit', this.value);}");
     input.setAttribute("value", sessionStorage.getItem("minProfit"));
     input.setAttribute("style", "float: right; width: 50px; margin-right: 5px; text-align: center;");
-    input.addEventListener("keyup", function() {
-        if (isFinite(this.value) && this.value.length) {
-            sessionStorage.setItem("minProfit", this.value);
-            var profit = document.querySelectorAll("span.trade-profit");
-            for (var a = 0; a < profit.length; a++) {
-                var percent = profit[a].firstChild.nodeValue;
-                if (+percent.split("%")[0] >= sessionStorage.getItem("minProfit"))
-                    profit[a].parentNode.parentNode.parentNode.style.display = "";
-                else
-                    hide(profit[a], 3);
-            }
-        }
-    })
     document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(input);
     addButton("paused", "Paused", false);
     addButton("alert", "Alert", false);
@@ -88,6 +75,20 @@
         sessionStorage.removeItem("latest");
         return;
     }
+
+    input.addEventListener("keyup", function() {
+        if (isFinite(this.value) && this.value.length) {
+            sessionStorage.setItem("minProfit", this.value);
+            var profit = document.querySelectorAll("span.trade-profit");
+            for (var a = 0; a < profit.length; a++) {
+                var percent = profit[a].firstChild.nodeValue;
+                if (+percent.split("%")[0] >= sessionStorage.getItem("minProfit"))
+                    profit[a].parentNode.parentNode.parentNode.style.display = "";
+                else
+                    hide(profit[a], 3);
+            }
+        }
+    });
 
     var profit = document.querySelectorAll("span.trade-profit");
     for (var a = 0; a < profit.length; a++) {
