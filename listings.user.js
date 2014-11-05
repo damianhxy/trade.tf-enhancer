@@ -59,6 +59,7 @@
     document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(input);
     addButton("paused", "Paused", false);
     addButton("alert", "Alert", false);
+    addButton("unusuals", "Unusuals", false);
     addButton("parted", "Parted", true);
     addButton("painted", "Painted", true);
     addButton("killstreak", "Killstreak", true);
@@ -111,6 +112,11 @@
         for (a = 0; a < parts.length; a++)
             if (parted[a].firstChild.nodeValue.contains("Strange Parts"))
                 setDisplay(parted[a], 7, "none");
+    }
+    if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
+        var unusuals = document.querySelectorAll("img.q-unusual");
+        for (a = 0; a < unusuals.length; a++)
+            setDisplay(unusuals[a], 7, "none");
     }
 
     if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
