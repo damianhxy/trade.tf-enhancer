@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.4
+// @version             1.1.5
 // ==/UserScript==
 
 (function () {
@@ -29,11 +29,11 @@
         document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(button);
     }
 
-    function hide(ele, lvls) {
+    function setDisplay(ele, lvls, disp) {
         while (lvls--)
             ele = ele.parentNode;
-        if (ele.style.display !== "none")
-            ele.style.display = "none";
+        if (ele.style.display !== disp)
+            ele.style.display = disp;
     }
 
     function range(lo, hi) {
@@ -54,89 +54,64 @@
 
     var input = document.createElement("input");
     sessionStorage.minProfit = sessionStorage.minProfit || 5;
-    input.setAttribute("min", 1);
-    input.setAttribute("onkeyup", "if(isFinite(this.value) && this.value.length){sessionStorage.setItem('minProfit', this.value);}");
     input.setAttribute("value", sessionStorage.getItem("minProfit"));
     input.setAttribute("style", "float: right; width: 50px; margin-right: 5px; text-align: center;");
     document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(input);
     addButton("paused", "Paused", false);
     addButton("alert", "Alert", false);
-    addButton("unusuals", "Unusuals", true);
-    addButton("unpriced", "Unpriced", true)
-    addButton("unconfirmed", "Unconfirmed", true);
     addButton("parted", "Parted", true);
     addButton("painted", "Painted", true);
     addButton("killstreak", "Killstreak", true);
-    addButton("gifted", "Gifted", true);
     addButton("caution", "Caution", true);
+
+    input.addEventListener("keyup", function() {
+        if (isFinite(this.value) && this.value.length) {
+            sessionStorage.setItem("minProfit", this.value);
+            var profit = document.querySelectorAll("span.trade-profit");
+            for (var a = 0; a < profit.length; a++) {
+                var percent = profit[a].firstChild.nodeValue;
+                if (+percent.split("%")[0] < sessionStorage.getItem("minProfit"))
+                    setDisplay(profit[a], 3, "none");
+                else if (profit[a].parentNode.parentNode.parentNode.style.display === "none")
+                    setDisplay(profit[a], 3, "");
+            }
+        }
+    });
 
     if (JSON.parse(sessionStorage.getItem("paused"))) {
         window.document.title = "Trade.tf: Paused";
         return;
     }
 
-    input.addEventListener("keyup", function() {
-        if (isFinite(this.value) && this.value.length) {
-            var profit = document.querySelectorAll("span.trade-profit");
-            for (var a = 0; a < profit.length; a++) {
-                var percent = profit[a].firstChild.nodeValue;
-                if (+percent.split("%")[0] >= sessionStorage.getItem("minProfit"))
-                    if (profit[a].parentNode.parentNode.parentNode.style.display === "none")
-                        profit[a].parentNode.parentNode.parentNode.style.display = "";
-                else
-                    if (!(JSON.parse(sessionStorage.getItem("unconfirmed")) && percent === "n/a"))
-                        hide(profit[a], 3);
-            }
-        }
-    });
-
     var profit = document.querySelectorAll("span.trade-profit");
     for (var a = 0; a < profit.length; a++) {
         var percent = profit[a].firstChild.nodeValue;
-        if (!(JSON.parse(sessionStorage.getItem("unconfirmed")) && percent === "n/a"))
-            hide(profit[a], 3);
-        else if (+percent.split("%")[0] < sessionStorage.getItem("minProfit"))
-            hide(profit[a], 3);
+        if (+percent.split("%")[0] < sessionStorage.getItem("minProfit"))
+            setDisplay(profit[a], 3, "none");
     }
 
     if (!JSON.parse(sessionStorage.getItem("caution"))) {
         var caution = document.getElementsByClassName("label-warning");
         for (a = 0; a < caution.length; a++)
             if (caution[a].firstChild.nodeValue.contains("Caution"))
-                hide(caution[a], 4);
-    }
-    if (!JSON.parse(sessionStorage.getItem("gifted"))) {
-        var gifted = document.getElementsByClassName("icon-gift");
-        for (a = 0; a < gifted.length; a++)
-            hide(gifted[a], 8);
+                setDisplay(caution[a], 4, "none");
     }
     if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
         var killstreak = document.getElementsByClassName("label-success");
-        for (a = 0; a < killstreak; a++)
+        for (a = 0; a < killstreak.length; a++)
             if (killstreak[a].firstChild.nodeValue.contains("Killstreak"))
-                hide(killstreak[a], 7);
+                setDisplay(killstreak[a], 7, "none");
     }
     if (!JSON.parse(sessionStorage.getItem("painted"))) {
         var painted = document.getElementsByClassName("paint1");
         for (a = 0; a < painted.length; a++)
-            hide(painted[a], 7);
+            setDisplay(painted[a], 7, "none");
     }
     if (!JSON.parse(sessionStorage.getItem("parted"))) {
         var parted = document.getElementsByClassName("label-success");
-        for (a = 0; a < parts; a++)
+        for (a = 0; a < parts.length; a++)
             if (parted[a].firstChild.nodeValue.contains("Strange Parts"))
-                hide(parted[a], 7);
-    }
-    if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
-        var unpriced = document.getElementsByClassName("label-important");
-        for (a = 0; a < unpriced; a++)
-            if (unpriced[a].firstElementChild.getAttribute("data-original-title").contains("price set yet"))
-                hide(unpriced[a], 6);
-    }
-    if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
-        var unusuals = document.querySelectorAll("[data-title^='Unusual']");
-        for (a = 0; a < unusuals.length; a++)
-            hide(unusuals[a], 6);
+                setDisplay(parted[a], 7, "none");
     }
 
     if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
@@ -147,10 +122,10 @@
                     break;
             }
             if (a !== latest.length) {
-                var tradeId = latest[a].parentNode.nextElementSibling.firstElementChild.firstElementChild.firstElementChild.href.replace(/\d/g, ""),
+                var trade = latest[a].parentNode.nextElementSibling.firstElementChild.firstElementChild.firstElementChild.href.slice(28,37),
                     audio = new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav");
-                if ((sessionStorage.getItem("latest") || 0) !== tradeId) {
-                    sessionStorage.setItem("latest", tradeId);
+                if ((sessionStorage.getItem("latest") || 0) !== trade) {
+                    sessionStorage.setItem("latest", trade);
                     audio.play();
                     latest[a].parentNode.parentNode.nextElementSibling.style.backgroundColor = "#628C2A";
                 }
