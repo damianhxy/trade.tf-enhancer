@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.6
+// @version             1.1.6.1
 // ==/UserScript==
 
 (function () {
@@ -75,7 +75,7 @@
                 var percent = profit[a].firstChild.nodeValue;
                 if (+percent.split("%")[0] < sessionStorage.getItem("minProfit"))
                     setDisplay(profit[a], 3, "none");
-                else if (profit[a].parentNode.parentNode.parentNode.style.display === "none")
+                else
                     setDisplay(profit[a], 3, "");
             }
         }
