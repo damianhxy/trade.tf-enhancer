@@ -8,5 +8,5 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.5
+// @version             1.1.6
 // ==/UserScript==

@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.5
+// @version             1.1.6
 // ==/UserScript==
 
 (function () {
@@ -66,8 +66,10 @@
     addButton("caution", "Caution", true);
 
     input.addEventListener("keyup", function() {
-        sessionStorage.setItem("minProfit", this.value);
-        if (isFinite(this.value) && this.value.length && !JSON.parse(sessionStorage.getItem("paused"))) {
+        if (isFinite(this.value) && this.value.length) {
+            sessionStorage.setItem("minProfit", this.value);
+            if (JSON.parse(sessionStorage.getItem("paused")))
+                return;
             var profit = document.querySelectorAll("span.trade-profit");
             for (var a = 0; a < profit.length; a++) {
                 var percent = profit[a].firstChild.nodeValue;
