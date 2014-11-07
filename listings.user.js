@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.6.1
+// @version             1.1.6.2
 // ==/UserScript==
 
 (function () {
@@ -22,7 +22,7 @@
     function addButton(prop, val, def) {
         var button = document.createElement("input");
         sessionStorage.setItem(prop, sessionStorage.getItem(prop) || def);
-        button.setAttribute("style", "color: white; float: right; margin-right: 5px; padding: 5px; border-radius: 5px; border-color: black;" + "background-color: " + (JSON.parse(sessionStorage.getItem(prop)) ? "#628C2A;" : "#F15853;"));
+        button.setAttribute("style", "color: white; float: right; margin-right: 5px; width: 70px; padding: 5px; border-radius: 5px; border-color: black;" + "background-color: " + (JSON.parse(sessionStorage.getItem(prop)) ? "#628C2A;" : "#F15853;"));
         button.setAttribute("value", val);
         button.setAttribute("type", "button");
         button.setAttribute("onclick", "sessionStorage.setItem('" + prop + "', !JSON.parse(sessionStorage.getItem('" + prop + "'))); location.reload();");
@@ -45,7 +45,7 @@
             var min = Math.floor(reloadTime / 60),
                 sec = reloadTime % 60;
             window.document.title = "Trade.tf: " + min + ":" + ("0" + sec).slice(-2);
-            data.innerHTML = "Reloading in: " + min + ":" + ("0" + sec).slice(-2);
+            data.innerHTML = " Reloading in: " + min + ":" + ("0" + sec).slice(-2);
             reloadTime--;
         }
         else
@@ -60,6 +60,7 @@
     addButton("paused", "Paused", false);
     addButton("alert", "Alert", false);
     addButton("unusuals", "Unusuals", false);
+    addButton("unpriced", "N/A", true);
     addButton("parted", "Parted", true);
     addButton("painted", "Painted", true);
     addButton("killstreak", "Killstreak", true);
@@ -72,8 +73,7 @@
                 return;
             var profit = document.querySelectorAll("span.trade-profit");
             for (var a = 0; a < profit.length; a++) {
-                var percent = profit[a].firstChild.nodeValue;
-                if (+percent.split("%")[0] < sessionStorage.getItem("minProfit"))
+                if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
                     setDisplay(profit[a], 3, "none");
                 else
                     setDisplay(profit[a], 3, "");
@@ -88,8 +88,7 @@
 
     var profit = document.querySelectorAll("span.trade-profit");
     for (var a = 0; a < profit.length; a++) {
-        var percent = profit[a].firstChild.nodeValue;
-        if (+percent.split("%")[0] < sessionStorage.getItem("minProfit"))
+        if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
             setDisplay(profit[a], 3, "none");
     }
     if (!JSON.parse(sessionStorage.getItem("caution"))) {
@@ -102,7 +101,8 @@
         var killstreak = document.getElementsByClassName("label-success");
         for (a = 0; a < killstreak.length; a++)
             if (killstreak[a].firstChild.nodeValue.contains("Killstreak"))
-                setDisplay(killstreak[a], 7, "none");
+                if (!killstreak[0].parentNode.parentNode.parentNode.firstElementChild.firstChild.nodeValue.contains("Fabricator"))
+                    setDisplay(killstreak[a], 7, "none");
     }
     if (!JSON.parse(sessionStorage.getItem("painted"))) {
         var painted = document.getElementsByClassName("paint1");
@@ -114,6 +114,12 @@
         for (a = 0; a < parts.length; a++)
             if (parted[a].firstChild.nodeValue.contains("Strange Parts"))
                 setDisplay(parted[a], 7, "none");
+    }
+    if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
+        var unpriced = document.getElementsByClassName("profit-even");
+        for (a = 0; a < unpriced.length; a++)
+            if (unpriced[a].firstElementChild.firstChild.nodeValue.contains("n/a"))
+                setDisplay(unpriced[a], 2, "none");
     }
     if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
         var unusuals = document.querySelectorAll("img.q-unusual");
@@ -144,7 +150,7 @@
         data = document.createElement("small"),
         title = document.getElementsByClassName("btn-reload")[0].parentNode;
     data.setAttribute("style", "color: orange;");
-    title.parentNode.insertBefore(data, title.nextSibling);
+    title.appendChild(data);
     setInterval(showStatus, 1000);
     console.info("Script Loaded.");
 }).call(this);
