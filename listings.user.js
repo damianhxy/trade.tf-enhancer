@@ -147,10 +147,9 @@
     }
 
     var reloadTime = randomTime ? range(randomMin, randomMax) : defaultTime,
-        data = document.createElement("small"),
-        title = document.getElementsByClassName("btn-reload")[0].parentNode;
+        data = document.createElement("small");
     data.setAttribute("style", "color: orange;");
-    title.appendChild(data);
+    document.getElementsByClassName("btn-reload")[0].parentNode.appendChild(data);
     setInterval(showStatus, 1000);
     console.info("Script Loaded.");
 }).call(this);
