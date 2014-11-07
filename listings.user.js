@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.6.2
+// @version             1.1.6.3
 // ==/UserScript==
 
 (function () {
@@ -20,12 +20,16 @@
     /******** END OF SETTINGS *******/
 
     function addButton(prop, val, def) {
-        var button = document.createElement("input");
+        var button = document.createElement("a"),
+            toggle = document.createElement("i"),
+            text = document.createTextNode(" " + val);
         sessionStorage.setItem(prop, sessionStorage.getItem(prop) || def);
-        button.setAttribute("style", "color: white; float: right; margin-right: 5px; width: 70px; padding: 5px; border-radius: 5px; border-color: black;" + "background-color: " + (JSON.parse(sessionStorage.getItem(prop)) ? "#628C2A;" : "#F15853;"));
-        button.setAttribute("value", val);
-        button.setAttribute("type", "button");
-        button.setAttribute("onclick", "sessionStorage.setItem('" + prop + "', !JSON.parse(sessionStorage.getItem('" + prop + "'))); location.reload();");
+        button.setAttribute("style", "color: white; float: right; margin-right: 5px; width: 100px; padding: 5px; border-radius: 5px;");
+        button.setAttribute("onclick", "window.stop(); sessionStorage.setItem('" + prop + "', !JSON.parse(sessionStorage.getItem('" + prop + "'))); location.reload();");
+        button.setAttribute("class", "btn btn-success btn-sm");
+        toggle.setAttribute("class", "icon icon-circle" + (JSON.parse(sessionStorage.getItem(prop)) ? "" : "-blank"));
+        button.appendChild(toggle);
+        button.appendChild(text);
         document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(button);
     }
 
@@ -52,6 +56,7 @@
             document.getElementsByClassName("btn-reload")[0].click();
     }
 
+    document.getElementsByClassName("clear-top")[0].firstElementChild.style.clear = "both";
     var input = document.createElement("input");
     sessionStorage.minProfit = sessionStorage.minProfit || 5;
     input.setAttribute("value", sessionStorage.getItem("minProfit"));
@@ -150,6 +155,7 @@
         data = document.createElement("small");
     data.setAttribute("style", "color: orange;");
     document.getElementsByClassName("btn-reload")[0].parentNode.appendChild(data);
+    document.getElementsByClassName("btn-reload")[0].firstElementChild.className = "icon icon-cog icon-spin";
     setInterval(showStatus, 1000);
     console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
 }).call(this);
