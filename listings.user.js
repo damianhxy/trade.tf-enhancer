@@ -151,5 +151,5 @@
     data.setAttribute("style", "color: orange;");
     document.getElementsByClassName("btn-reload")[0].parentNode.appendChild(data);
     setInterval(showStatus, 1000);
-    console.info("Script Loaded.");
+    console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
 }).call(this);
