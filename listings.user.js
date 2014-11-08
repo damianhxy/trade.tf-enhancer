@@ -3,12 +3,12 @@
 // @description         Trade.tf Freemium
 // @downloadURL         https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.user.js
 // @grant               none
-// @include             /^https?:\/\/www\.trade\.tf\/listings\/\d+/
+// @include             /^https?:\/\/www\.trade\.tf.*/
 // @name                Trade.tf Reloader
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.6.3
+// @version             1.1.6.4
 // ==/UserScript==
 
 (function () {
@@ -27,7 +27,7 @@
         button.setAttribute("style", "color: white; float: right; margin-right: 5px; width: 100px; padding: 5px; border-radius: 5px;");
         button.setAttribute("onclick", "window.stop(); sessionStorage.setItem('" + prop + "', !JSON.parse(sessionStorage.getItem('" + prop + "'))); location.reload();");
         button.setAttribute("class", "btn btn-success btn-sm");
-        toggle.setAttribute("class", "icon icon-circle" + (JSON.parse(sessionStorage.getItem(prop)) ? "" : "-blank"));
+        toggle.setAttribute("class", "fa fa-toggle-" + (JSON.parse(sessionStorage.getItem(prop)) ? "on" : "off"));
         button.appendChild(toggle);
         button.appendChild(text);
         document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(button);
@@ -55,6 +55,19 @@
         else
             document.getElementsByClassName("btn-reload")[0].click();
     }
+
+    document.querySelectorAll("link[href*='font-awesome']")[0].href = "http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css";
+    var old = document.querySelectorAll("i[class*='icon']");
+    for (var a = 0; a < old.length; a++) {
+        var cls = old[a].className;
+        cls = cls.replace("white", "inverse");
+        cls = cls.replace("ok-circle", "check-circle-o")
+        cls = cls.replace("info-sign", "info-circle");
+        old[a].className = "fa " + cls.replace(/icon/g, "fa");
+    }
+
+    if (!window.location.href.match(/^https?:\/\/www\.trade\.tf\/listings\/\d+/))
+        return;
 
     document.getElementsByClassName("clear-top")[0].firstElementChild.style.clear = "both";
     var input = document.createElement("input");
