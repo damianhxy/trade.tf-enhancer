@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.6.4
+// @version             1.1.7
 // ==/UserScript==
 
 (function () {
@@ -24,9 +24,9 @@
             toggle = document.createElement("i"),
             text = document.createTextNode(" " + val);
         sessionStorage.setItem(prop, sessionStorage.getItem(prop) || def);
-        button.setAttribute("style", "color: white; float: right; margin-right: 5px; width: 100px; padding: 5px; border-radius: 5px;");
-        button.setAttribute("onclick", "window.stop(); sessionStorage.setItem('" + prop + "', !JSON.parse(sessionStorage.getItem('" + prop + "'))); location.reload();");
-        button.setAttribute("class", "btn btn-success btn-sm");
+        button.setAttribute("style", "margin-right: 5px; width: 100px;");
+        button.setAttribute("onclick", "sessionStorage.setItem('" + prop + "', !JSON.parse(sessionStorage.getItem('" + prop + "'))); location.reload();");
+        button.setAttribute("class", "btn btn-success btn-sm pull-right");
         toggle.setAttribute("class", "fa fa-toggle-" + (JSON.parse(sessionStorage.getItem(prop)) ? "on" : "off"));
         button.appendChild(toggle);
         button.appendChild(text);
@@ -111,44 +111,44 @@
     }
     if (!JSON.parse(sessionStorage.getItem("caution"))) {
         var caution = document.getElementsByClassName("label-warning");
-        for (a = 0; a < caution.length; a++)
+        for (var a = 0; a < caution.length; a++)
             if (caution[a].firstChild.nodeValue.contains("Caution"))
                 setDisplay(caution[a], 4, "none");
     }
     if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
         var killstreak = document.getElementsByClassName("label-success");
-        for (a = 0; a < killstreak.length; a++)
+        for (var a = 0; a < killstreak.length; a++)
             if (killstreak[a].firstChild.nodeValue.contains("Killstreak"))
                 if (!killstreak[0].parentNode.parentNode.parentNode.firstElementChild.firstChild.nodeValue.contains("Fabricator"))
                     setDisplay(killstreak[a], 7, "none");
     }
     if (!JSON.parse(sessionStorage.getItem("painted"))) {
         var painted = document.getElementsByClassName("paint1");
-        for (a = 0; a < painted.length; a++)
+        for (var a = 0; a < painted.length; a++)
             setDisplay(painted[a], 7, "none");
     }
     if (!JSON.parse(sessionStorage.getItem("parted"))) {
         var parted = document.getElementsByClassName("label-success");
-        for (a = 0; a < parts.length; a++)
+        for (var a = 0; a < parts.length; a++)
             if (parted[a].firstChild.nodeValue.contains("Strange Parts"))
                 setDisplay(parted[a], 7, "none");
     }
     if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
         var unpriced = document.getElementsByClassName("profit-even");
-        for (a = 0; a < unpriced.length; a++)
+        for (var a = 0; a < unpriced.length; a++)
             if (unpriced[a].firstElementChild.firstChild.nodeValue.contains("n/a"))
                 setDisplay(unpriced[a], 2, "none");
     }
     if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
         var unusuals = document.querySelectorAll("img.q-unusual");
-        for (a = 0; a < unusuals.length; a++)
+        for (var a = 0; a < unusuals.length; a++)
             setDisplay(unusuals[a], 7, "none");
     }
 
     if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
         var latest = document.querySelectorAll("span.trade-profit");
         if (latest.length) {
-            for (a = 0; a < latest.length; a++) {
+            for (var a = 0; a < latest.length; a++) {
                 if (latest[a].parentNode.parentNode.parentNode.style.display !== "none")
                     break;
             }
