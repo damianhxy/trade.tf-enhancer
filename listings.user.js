@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.7
+// @version             1.1.7.1
 // ==/UserScript==
 
 (function () {
@@ -61,8 +61,9 @@
     for (var a = 0; a < old.length; a++) {
         var cls = old[a].className;
         cls = cls.replace("white", "inverse");
-        cls = cls.replace("ok-circle", "check-circle-o")
+        cls = cls.replace("ok-circle", "check-circle-o");
         cls = cls.replace("info-sign", "info-circle");
+        cls = cls.replace("check", "check-square-o");
         old[a].className = "fa " + cls.replace(/icon/g, "fa");
     }
 
