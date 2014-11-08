@@ -168,7 +168,7 @@
         data = document.createElement("small");
     data.setAttribute("style", "color: orange;");
     document.getElementsByClassName("btn-reload")[0].parentNode.appendChild(data);
-    document.getElementsByClassName("btn-reload")[0].firstElementChild.className = "icon icon-cog icon-spin";
+    document.getElementsByClassName("btn-reload")[0].firstElementChild.className = "fa fa-cog fa-spin";
     setInterval(showStatus, 1000);
     console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
 }).call(this);
