@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.7.1
+// @version             1.1.7.2
 // ==/UserScript==
 
 (function () {
@@ -130,7 +130,7 @@
     }
     if (!JSON.parse(sessionStorage.getItem("parted"))) {
         var parted = document.getElementsByClassName("label-success");
-        for (var a = 0; a < parts.length; a++)
+        for (var a = 0; a < parted.length; a++)
             if (parted[a].firstChild.nodeValue.contains("Strange Parts"))
                 setDisplay(parted[a], 7, "none");
     }
