@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.7.2
+// @version             1.1.7.3
 // ==/UserScript==
 
 (function () {
@@ -31,6 +31,12 @@
         button.appendChild(toggle);
         button.appendChild(text);
         document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(button);
+    }
+
+    function filter(ele, lvls) {
+        while (lvls--)
+            ele = ele.parentNode;
+        ele.setAttribute("filtered", "");
     }
 
     function setDisplay(ele, lvls, disp) {
@@ -94,7 +100,7 @@
             for (var a = 0; a < profit.length; a++) {
                 if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
                     setDisplay(profit[a], 3, "none");
-                else
+                else if (!profit[a].hasAttribute("filtered"))
                     setDisplay(profit[a], 3, "");
             }
         }
@@ -113,37 +119,48 @@
     if (!JSON.parse(sessionStorage.getItem("caution"))) {
         var caution = document.getElementsByClassName("label-warning");
         for (var a = 0; a < caution.length; a++)
-            if (caution[a].firstChild.nodeValue.contains("Caution"))
+            if (caution[a].firstChild.nodeValue.contains("Caution")) {
                 setDisplay(caution[a], 4, "none");
+                filter(caution[a], 4);
+            }
     }
     if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
         var killstreak = document.getElementsByClassName("label-success");
         for (var a = 0; a < killstreak.length; a++)
-            if (killstreak[a].firstChild.nodeValue.contains("Killstreak"))
-                if (!killstreak[0].parentNode.parentNode.parentNode.firstElementChild.firstChild.nodeValue.contains("Fabricator"))
-                    setDisplay(killstreak[a], 7, "none");
+            if (killstreak[a].firstChild.nodeValue.contains("Killstreak")) {
+                setDisplay(killstreak[a], 7, "none");
+                filter(killstreak[a], 7);
+            }
     }
     if (!JSON.parse(sessionStorage.getItem("painted"))) {
         var painted = document.getElementsByClassName("paint1");
-        for (var a = 0; a < painted.length; a++)
+        for (var a = 0; a < painted.length; a++) {
             setDisplay(painted[a], 7, "none");
+            filter(painted[a], 7);
+        }
     }
     if (!JSON.parse(sessionStorage.getItem("parted"))) {
         var parted = document.getElementsByClassName("label-success");
         for (var a = 0; a < parted.length; a++)
-            if (parted[a].firstChild.nodeValue.contains("Strange Parts"))
+            if (parted[a].firstChild.nodeValue.contains("Strange Parts")) {
                 setDisplay(parted[a], 7, "none");
+                filter(parted[a], 7);
+            }
     }
     if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
         var unpriced = document.getElementsByClassName("profit-even");
         for (var a = 0; a < unpriced.length; a++)
-            if (unpriced[a].firstElementChild.firstChild.nodeValue.contains("n/a"))
+            if (unpriced[a].firstElementChild.firstChild.nodeValue.contains("n/a")) {
                 setDisplay(unpriced[a], 2, "none");
+                filter(unpriced[a], 2)
+            }
     }
     if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
         var unusuals = document.querySelectorAll("img.q-unusual");
-        for (var a = 0; a < unusuals.length; a++)
+        for (var a = 0; a < unusuals.length; a++) {
             setDisplay(unusuals[a], 7, "none");
+            filter(unusuals[a], 7);
+        }
     }
 
     if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
@@ -154,9 +171,9 @@
                     break;
             }
             if (a !== latest.length) {
-                var trade = latest[a].parentNode.nextElementSibling.firstElementChild.firstElementChild.firstElementChild.href.slice(28,37),
+                var trade = latest[a].parentNode.nextElementSibling.firstElementChild.firstElementChild.firstElementChild.href.slice(28, 37),
                     audio = new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav");
-                if ((sessionStorage.getItem("latest") || 0) !== trade) {
+                if (sessionStorage.getItem("latest") !== trade) {
                     sessionStorage.setItem("latest", trade);
                     audio.play();
                     latest[a].parentNode.parentNode.nextElementSibling.style.backgroundColor = "#628C2A";
