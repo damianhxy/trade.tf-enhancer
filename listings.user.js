@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @run-at              document-end
 // @updateURL           https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.meta.js
-// @version             1.1.7.3
+// @version             1.1.7.4
 // ==/UserScript==
 
 (function () {
@@ -36,7 +36,8 @@
     function filter(ele, lvls) {
         while (lvls--)
             ele = ele.parentNode;
-        ele.setAttribute("filtered", "");
+        if (!ele.hasAttribute("data-filtered"))
+            ele.setAttribute("data-filtered", "");
     }
 
     function setDisplay(ele, lvls, disp) {
@@ -100,7 +101,7 @@
             for (var a = 0; a < profit.length; a++) {
                 if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
                     setDisplay(profit[a], 3, "none");
-                else if (!profit[a].hasAttribute("filtered"))
+                else if (!profit[a].parentNode.parentNode.parentNode.hasAttribute("data-filtered"))
                     setDisplay(profit[a], 3, "");
             }
         }
