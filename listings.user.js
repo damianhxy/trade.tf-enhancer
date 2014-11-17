@@ -7,7 +7,7 @@
 // @name                Trade.tf Reloader
 // @namespace           localhost
 // @run-at              document-end
-// @version             1.1.7.5
+// @version             1.1.7.6
 // ==/UserScript==
 
 (function () {
@@ -168,7 +168,7 @@
         var latest = document.querySelectorAll("span.trade-profit");
         if (latest.length) {
             for (var a = 0; a < latest.length; a++) {
-                if (latest[a].parentNode.parentNode.parentNode.style.display !== "none")
+                if (!latest[a].parentNode.parentNode.parentNode.hasAttribute("data-filtered"))
                     break;
             }
             if (a !== latest.length) {
