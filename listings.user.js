@@ -172,11 +172,10 @@
                     break;
             }
             if (a !== latest.length) {
-                var trade = latest[a].parentNode.nextElementSibling.firstElementChild.firstElementChild.firstElementChild.href.slice(28, 37),
-                    audio = new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav");
+                var trade = latest[a].parentNode.nextElementSibling.firstElementChild.firstElementChild.firstElementChild.href.slice(28, 37);
                 if (sessionStorage.getItem("latest") !== trade) {
                     sessionStorage.setItem("latest", trade);
-                    audio.play();
+                    new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav").play();
                     latest[a].parentNode.parentNode.nextElementSibling.style.backgroundColor = "#628C2A";
                 }
             }
