@@ -7,7 +7,7 @@
 // @name                Trade.tf Reloader
 // @namespace           localhost
 // @run-at              document-end
-// @version             1.1.7.4
+// @version             1.1.7.5
 // ==/UserScript==
 
 (function () {
@@ -65,12 +65,13 @@
     document.querySelectorAll("link[href*='font-awesome']")[0].href = "http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css";
     var old = document.querySelectorAll("i[class*='icon']");
     for (var a = 0; a < old.length; a++) {
-        var cls = old[a].className;
-        cls = cls.replace("white", "inverse");
-        cls = cls.replace("ok-circle", "check-circle-o");
-        cls = cls.replace("info-sign", "info-circle");
-        cls = cls.replace("check", "check-square-o");
-        old[a].className = "fa " + cls.replace(/icon/g, "fa");
+        var cls = old[a].className.replace(/icon/g, "fa");
+        cls = cls.replace("fa-check", "fa-check-square-o");
+        cls = cls.replace("fa-info-sign", "fa-info-circle");
+        cls = cls.replace("fa-ok-circle", "fa-check-circle-o");
+        cls = cls.replace("fa-time", "fa-clock-o");
+        cls = cls.replace("fa-white", "fa-inverse");
+        old[a].className = "fa " + cls;
     }
 
     if (!window.location.href.match(/^https?:\/\/www\.trade\.tf\/listings\/\d+/))
