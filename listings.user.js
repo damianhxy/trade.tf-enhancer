@@ -7,17 +7,18 @@
 // @name                Trade.tf Reloader
 // @namespace           localhost
 // @run-at              document-end
-// @version             1.1.7.6
+// @version             1.1.7.7
 // ==/UserScript==
 
 (function () {
     /*********** SETTINGS ***********/
-    var randomTime = 0,              //(boolean) random reload time?
-        defaultTime = 15,            //(seconds) default reload time
-        randomMin = 10,              //(seconds) minimum random reload time
-        randomMax = 20;              //(seconds) maximum random reload time
+    var randomTime = 0,              //[boolean] random reload time?
+        defaultTime = 15,            //[seconds] default reload time
+        randomMin = 10,              //[seconds] minimum random reload time
+        randomMax = 20;              //[seconds] maximum random reload time
     /******** END OF SETTINGS *******/
 
+    //FUNCTION DECLARATIONS
     function addButton(prop, val, def) {
         var button = document.createElement("a"),
             toggle = document.createElement("i"),
@@ -35,8 +36,14 @@
     function filter(ele, lvls) {
         while (lvls--)
             ele = ele.parentNode;
-        if (!ele.hasAttribute("data-filtered"))
-            ele.setAttribute("data-filtered", "");
+        if (!ele.hasAttribute("data-hidden")) {
+            ele.setAttribute("data-hidden", "");
+            ele.style.display = "none";
+        }
+    }
+
+    function range(lo, hi) {
+        return Math.floor(Math.random() * (hi - lo + 1)) + lo;
     }
 
     function setDisplay(ele, lvls, disp) {
@@ -44,10 +51,6 @@
             ele = ele.parentNode;
         if (ele.style.display !== disp)
             ele.style.display = disp;
-    }
-
-    function range(lo, hi) {
-        return Math.floor(Math.random() * (hi - lo + 1)) + lo;
     }
 
     function showStatus() {
@@ -62,24 +65,30 @@
             document.getElementsByClassName("btn-reload")[0].click();
     }
 
-    document.querySelectorAll("link[href*='font-awesome']")[0].href = "http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css";
+    //START OF SCRIPT
+try {
+    /******** SCRIPT GLOBALS ********/
+    var listingsPage = window.location.href.match(/^https?:\/\/www\.trade\.tf\/listings\/\d+/);
+    /****** END SCRIPT GLOBALS ******/
+
+    document.querySelectorAll("link[href*='font-awesome']")[0].href = "//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css";
     var old = document.querySelectorAll("i[class*='icon']");
     for (var a = 0; a < old.length; a++) {
-        var cls = old[a].className.replace(/icon/g, "fa");
-        cls = cls.replace("fa-check", "fa-check-square-o");
-        cls = cls.replace("fa-info-sign", "fa-info-circle");
-        cls = cls.replace("fa-ok-circle", "fa-check-circle-o");
-        cls = cls.replace("fa-time", "fa-clock-o");
-        cls = cls.replace("fa-white", "fa-inverse");
-        old[a].className = "fa " + cls;
+        var cls = old[a].className;
+        cls = cls.replace("-check", "-check-square-o");
+        cls = cls.replace("-info-sign", "-info-circle");
+        cls = cls.replace("-ok-circle", "-check-circle-o");
+        cls = cls.replace("-time", "-clock-o");
+        cls = cls.replace("-white", "-inverse");
+        old[a].className = "fa " + cls.replace(/icon/g, "fa");
     }
 
-    if (!window.location.href.match(/^https?:\/\/www\.trade\.tf\/listings\/\d+/))
+    if (!listingsPage)
         return;
 
-    document.getElementsByClassName("clear-top")[0].firstElementChild.style.clear = "both";
     var input = document.createElement("input");
-    sessionStorage.minProfit = sessionStorage.minProfit || 5;
+
+    sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
     input.setAttribute("value", sessionStorage.getItem("minProfit"));
     input.setAttribute("style", "float: right; width: 50px; margin-right: 5px; text-align: center;");
     document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(input);
@@ -91,7 +100,6 @@
     addButton("painted", "Painted", true);
     addButton("killstreak", "Killstreak", true);
     addButton("caution", "Caution", true);
-
     input.addEventListener("keyup", function() {
         if (isFinite(this.value) && this.value.length) {
             sessionStorage.setItem("minProfit", this.value);
@@ -101,7 +109,7 @@
             for (var a = 0; a < profit.length; a++) {
                 if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
                     setDisplay(profit[a], 3, "none");
-                else if (!profit[a].parentNode.parentNode.parentNode.hasAttribute("data-filtered"))
+                else if (!profit[a].parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
                     setDisplay(profit[a], 3, "");
             }
         }
@@ -117,58 +125,47 @@
         if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
             setDisplay(profit[a], 3, "none");
     }
+
     if (!JSON.parse(sessionStorage.getItem("caution"))) {
         var caution = document.getElementsByClassName("label-warning");
         for (var a = 0; a < caution.length; a++)
-            if (caution[a].firstChild.nodeValue.contains("Caution")) {
-                setDisplay(caution[a], 4, "none");
+            if (caution[a].firstChild.nodeValue.contains("Caution"))
                 filter(caution[a], 4);
-            }
     }
-    if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
+    else if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
         var killstreak = document.getElementsByClassName("label-success");
         for (var a = 0; a < killstreak.length; a++)
-            if (killstreak[a].firstChild.nodeValue.contains("Killstreak")) {
-                setDisplay(killstreak[a], 7, "none");
+            if (killstreak[a].firstChild.nodeValue.contains("Killstreak"))
                 filter(killstreak[a], 7);
-            }
     }
-    if (!JSON.parse(sessionStorage.getItem("painted"))) {
+    else if (!JSON.parse(sessionStorage.getItem("painted"))) {
         var painted = document.getElementsByClassName("paint1");
-        for (var a = 0; a < painted.length; a++) {
-            setDisplay(painted[a], 7, "none");
+        for (var a = 0; a < painted.length; a++)
             filter(painted[a], 7);
-        }
     }
-    if (!JSON.parse(sessionStorage.getItem("parted"))) {
+    else if (!JSON.parse(sessionStorage.getItem("parted"))) {
         var parted = document.getElementsByClassName("label-success");
         for (var a = 0; a < parted.length; a++)
-            if (parted[a].firstChild.nodeValue.contains("Strange Parts")) {
-                setDisplay(parted[a], 7, "none");
+            if (parted[a].firstChild.nodeValue.contains("Strange Parts"))
                 filter(parted[a], 7);
-            }
     }
-    if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
+    else if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
         var unpriced = document.getElementsByClassName("profit-even");
         for (var a = 0; a < unpriced.length; a++)
-            if (unpriced[a].firstElementChild.firstChild.nodeValue.contains("n/a")) {
-                setDisplay(unpriced[a], 2, "none");
-                filter(unpriced[a], 2)
-            }
+            if (unpriced[a].firstElementChild.firstChild.nodeValue.contains("n/a"))
+                filter(unpriced[a], 2);
     }
-    if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
+    else if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
         var unusuals = document.querySelectorAll("img.q-unusual");
-        for (var a = 0; a < unusuals.length; a++) {
-            setDisplay(unusuals[a], 7, "none");
+        for (var a = 0; a < unusuals.length; a++)
             filter(unusuals[a], 7);
-        }
     }
 
     if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
         var latest = document.querySelectorAll("span.trade-profit");
         if (latest.length) {
             for (var a = 0; a < latest.length; a++) {
-                if (!latest[a].parentNode.parentNode.parentNode.hasAttribute("data-filtered"))
+                if (!latest[a].parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
                     break;
             }
             if (a !== latest.length) {
@@ -176,7 +173,7 @@
                 if (sessionStorage.getItem("latest") !== trade) {
                     sessionStorage.setItem("latest", trade);
                     new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav").play();
-                    latest[a].parentNode.parentNode.nextElementSibling.style.backgroundColor = "#628C2A";
+                    latest[a].parentNode.parentNode.nextElementSibling.style.backgroundColor = "lime";
                 }
             }
         }
@@ -186,7 +183,12 @@
         data = document.createElement("small");
     data.setAttribute("style", "color: orange;");
     document.getElementsByClassName("btn-reload")[0].parentNode.appendChild(data);
+    document.getElementsByClassName("clear-top")[0].firstElementChild.style.clear = "both";
     document.getElementsByClassName("btn-reload")[0].firstElementChild.className = "fa fa-cog fa-spin";
     setInterval(showStatus, 1000);
     console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
-}).call(this);
+}
+catch(e) {
+    alert("An error has occured: " + e.message + "\nStack Trace: " + e.stack);
+}
+})();
