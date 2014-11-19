@@ -7,7 +7,7 @@
 // @name                Trade.tf Reloader
 // @namespace           localhost
 // @run-at              document-end
-// @version             1.1.7.7
+// @version             1.1.7.8
 // ==/UserScript==
 
 (function () {
@@ -188,6 +188,6 @@ try {
     console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
 }
 catch(e) {
-    alert("An error has occured: " + e.message + "\nStack Trace: " + e.stack);
+    alert("[An error has occured]\n" + e.message + "\n[Stack Trace]\n" + e.stack);
 }
 })();
