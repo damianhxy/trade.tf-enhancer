@@ -83,109 +83,108 @@ try {
         old[a].className = "fa " + cls.replace(/icon/g, "fa");
     }
 
-    if (!listingsPage)
-        return;
+    if (listingsPage) {
+        var input = document.createElement("input");
 
-    var input = document.createElement("input");
-
-    sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
-    input.setAttribute("value", sessionStorage.getItem("minProfit"));
-    input.setAttribute("style", "float: right; width: 50px; margin-right: 5px; text-align: center;");
-    document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(input);
-    addButton("paused", "Paused", false);
-    addButton("alert", "Alert", false);
-    addButton("unusuals", "Unusuals", false);
-    addButton("unpriced", "N/A", true);
-    addButton("parted", "Parted", true);
-    addButton("painted", "Painted", true);
-    addButton("killstreak", "Killstreak", true);
-    addButton("caution", "Caution", true);
-    input.addEventListener("keyup", function() {
-        if (isFinite(this.value) && this.value.length) {
-            sessionStorage.setItem("minProfit", this.value);
-            if (JSON.parse(sessionStorage.getItem("paused")))
-                return;
-            var profit = document.querySelectorAll("span.trade-profit");
-            for (var a = 0; a < profit.length; a++) {
-                if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
-                    setDisplay(profit[a], 3, "none");
-                else if (!profit[a].parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
-                    setDisplay(profit[a], 3, "");
+        sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
+        input.setAttribute("value", sessionStorage.getItem("minProfit"));
+        input.setAttribute("style", "float: right; width: 50px; margin-right: 5px; text-align: center;");
+        document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(input);
+        addButton("paused", "Paused", false);
+        addButton("alert", "Alert", false);
+        addButton("unusuals", "Unusuals", false);
+        addButton("unpriced", "N/A", true);
+        addButton("parted", "Parted", true);
+        addButton("painted", "Painted", true);
+        addButton("killstreak", "Killstreak", true);
+        addButton("caution", "Caution", true);
+        input.addEventListener("keyup", function() {
+            if (isFinite(this.value) && this.value.length) {
+                sessionStorage.setItem("minProfit", this.value);
+                if (JSON.parse(sessionStorage.getItem("paused")))
+                    return;
+                var profit = document.querySelectorAll("span.trade-profit");
+                for (var a = 0; a < profit.length; a++) {
+                    if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
+                        setDisplay(profit[a], 3, "none");
+                    else if (!profit[a].parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
+                        setDisplay(profit[a], 3, "");
+                }
             }
+        });
+
+        if (JSON.parse(sessionStorage.getItem("paused"))) {
+            window.document.title = "Trade.tf: Paused";
+            return;
         }
-    });
 
-    if (JSON.parse(sessionStorage.getItem("paused"))) {
-        window.document.title = "Trade.tf: Paused";
-        return;
-    }
+        var profit = document.querySelectorAll("span.trade-profit");
+        for (var a = 0; a < profit.length; a++) {
+            if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
+                setDisplay(profit[a], 3, "none");
+        }
 
-    var profit = document.querySelectorAll("span.trade-profit");
-    for (var a = 0; a < profit.length; a++) {
-        if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
-            setDisplay(profit[a], 3, "none");
-    }
+        if (!JSON.parse(sessionStorage.getItem("caution"))) {
+            var caution = document.getElementsByClassName("label-warning");
+            for (var a = 0; a < caution.length; a++)
+                if (caution[a].firstChild.nodeValue.contains("Caution"))
+                    filter(caution[a], 4);
+        }
+        else if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
+            var killstreak = document.getElementsByClassName("label-success");
+            for (var a = 0; a < killstreak.length; a++)
+                if (killstreak[a].firstChild.nodeValue.contains("Killstreak"))
+                    filter(killstreak[a], 7);
+        }
+        else if (!JSON.parse(sessionStorage.getItem("painted"))) {
+            var painted = document.getElementsByClassName("paint1");
+            for (var a = 0; a < painted.length; a++)
+                filter(painted[a], 7);
+        }
+        else if (!JSON.parse(sessionStorage.getItem("parted"))) {
+            var parted = document.getElementsByClassName("label-success");
+            for (var a = 0; a < parted.length; a++)
+                if (parted[a].firstChild.nodeValue.contains("Strange Parts"))
+                    filter(parted[a], 7);
+        }
+        else if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
+            var unpriced = document.getElementsByClassName("profit-even");
+            for (var a = 0; a < unpriced.length; a++)
+                if (unpriced[a].firstElementChild.firstChild.nodeValue.contains("n/a"))
+                    filter(unpriced[a], 2);
+        }
+        else if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
+            var unusuals = document.querySelectorAll("img.q-unusual");
+            for (var a = 0; a < unusuals.length; a++)
+                filter(unusuals[a], 7);
+        }
 
-    if (!JSON.parse(sessionStorage.getItem("caution"))) {
-        var caution = document.getElementsByClassName("label-warning");
-        for (var a = 0; a < caution.length; a++)
-            if (caution[a].firstChild.nodeValue.contains("Caution"))
-                filter(caution[a], 4);
-    }
-    else if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
-        var killstreak = document.getElementsByClassName("label-success");
-        for (var a = 0; a < killstreak.length; a++)
-            if (killstreak[a].firstChild.nodeValue.contains("Killstreak"))
-                filter(killstreak[a], 7);
-    }
-    else if (!JSON.parse(sessionStorage.getItem("painted"))) {
-        var painted = document.getElementsByClassName("paint1");
-        for (var a = 0; a < painted.length; a++)
-            filter(painted[a], 7);
-    }
-    else if (!JSON.parse(sessionStorage.getItem("parted"))) {
-        var parted = document.getElementsByClassName("label-success");
-        for (var a = 0; a < parted.length; a++)
-            if (parted[a].firstChild.nodeValue.contains("Strange Parts"))
-                filter(parted[a], 7);
-    }
-    else if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
-        var unpriced = document.getElementsByClassName("profit-even");
-        for (var a = 0; a < unpriced.length; a++)
-            if (unpriced[a].firstElementChild.firstChild.nodeValue.contains("n/a"))
-                filter(unpriced[a], 2);
-    }
-    else if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
-        var unusuals = document.querySelectorAll("img.q-unusual");
-        for (var a = 0; a < unusuals.length; a++)
-            filter(unusuals[a], 7);
-    }
-
-    if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
-        var latest = document.querySelectorAll("span.trade-profit");
-        if (latest.length) {
-            for (var a = 0; a < latest.length; a++) {
-                if (!latest[a].parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
-                    break;
-            }
-            if (a !== latest.length) {
-                var trade = latest[a].parentNode.nextElementSibling.firstElementChild.firstElementChild.firstElementChild.href.slice(28, 37);
-                if (sessionStorage.getItem("latest") !== trade) {
-                    sessionStorage.setItem("latest", trade);
-                    new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav").play();
-                    latest[a].parentNode.parentNode.nextElementSibling.style.backgroundColor = "lime";
+        if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
+            var latest = document.querySelectorAll("span.trade-profit");
+            if (latest.length) {
+                for (var a = 0; a < latest.length; a++) {
+                    if (!latest[a].parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
+                        break;
+                }
+                if (a !== latest.length) {
+                    var trade = latest[a].parentNode.nextElementSibling.firstElementChild.firstElementChild.firstElementChild.href.slice(28, 37);
+                    if (sessionStorage.getItem("latest") !== trade) {
+                        sessionStorage.setItem("latest", trade);
+                        new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav").play();
+                        latest[a].parentNode.parentNode.nextElementSibling.style.backgroundColor = "lime";
+                    }
                 }
             }
         }
-    }
 
-    var reloadTime = randomTime ? range(randomMin, randomMax) : defaultTime,
-        data = document.createElement("small");
-    data.setAttribute("style", "color: orange;");
-    document.getElementsByClassName("btn-reload")[0].parentNode.appendChild(data);
-    document.getElementsByClassName("clear-top")[0].firstElementChild.style.clear = "both";
-    document.getElementsByClassName("btn-reload")[0].firstElementChild.className = "fa fa-cog fa-spin";
-    setInterval(showStatus, 1000);
+        var reloadTime = randomTime ? range(randomMin, randomMax) : defaultTime,
+            data = document.createElement("small");
+        data.setAttribute("style", "color: orange;");
+        document.getElementsByClassName("btn-reload")[0].parentNode.appendChild(data);
+        document.getElementsByClassName("clear-top")[0].firstElementChild.style.clear = "both";
+        document.getElementsByClassName("btn-reload")[0].firstElementChild.className = "fa fa-cog fa-spin";
+        setInterval(showStatus, 1000);
+    }
     console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
 }
 catch(e) {
