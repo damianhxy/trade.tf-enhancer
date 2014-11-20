@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @noframes
 // @run-at              document-end
-// @version             1.1.8.0
+// @version             1.1.8.1
 // ==/UserScript==
 
 (function () {
@@ -21,14 +21,16 @@
 
     //FUNCTION DECLARATIONS
     function addButton(prop, val, def) {
+        sessionStorage.setItem(prop, sessionStorage.getItem(prop) || def);
         var button = document.createElement("a"),
             toggle = document.createElement("i"),
-            text = document.createTextNode(" " + val);
-        sessionStorage.setItem(prop, sessionStorage.getItem(prop) || def);
+            text = document.createTextNode(" " + val),
+            activated = JSON.parse(sessionStorage.getItem(prop));
         button.setAttribute("style", "margin-right: 5px; width: 100px;");
-        button.setAttribute("onclick", "sessionStorage.setItem('" + prop + "', !JSON.parse(sessionStorage.getItem('" + prop + "'))); location.reload();");
-        button.setAttribute("class", "btn btn-success btn-sm pull-right");
-        toggle.setAttribute("class", "fa fa-toggle-" + (JSON.parse(sessionStorage.getItem(prop)) ? "on" : "off"));
+        button.setAttribute("onclick", "sessionStorage.setItem('" + prop +
+                            "', !JSON.parse(sessionStorage.getItem('" + prop + "'))); location.reload();");
+        button.setAttribute("class", "btn btn-" + (activated ? "success" : "danger") + " btn-sm pull-right");
+        toggle.setAttribute("class", "fa fa-toggle-" + (activated ? "on" : "off"));
         button.appendChild(toggle);
         button.appendChild(text);
         document.querySelector("div[style^='width: 100%;']").appendChild(button);
@@ -72,7 +74,8 @@ try {
     var listingsPage = window.location.href.match(/^https?:\/\/www\.trade\.tf\/listings\/\d+/);
     /****** END SCRIPT GLOBALS ******/
 
-    document.querySelector("[href*='font-awesome']").href = "//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css";
+    var style = document.querySelector("[href*='font-awesome']");
+    style.href = style.href.replace("3.2.1", "4.2.0");
     Array.prototype.forEach.call(document.querySelectorAll("[class*='icon']"), function(e) {
         var cls = e.className;
         cls = cls.replace("-check", "-check-square-o");
@@ -160,7 +163,7 @@ try {
         if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
             var vis = document.querySelector(".trade:not([data-hidden])");
             if (vis) {
-                var trade = vis.firstElementChild.children[1].firstElementChild.firstElementChild.firstElementChild.href.slice(28, 37);
+                var trade = vis.querySelector("[href]").href.slice(28, 37);
                 if (sessionStorage.getItem("latest") !== trade) {
                     sessionStorage.setItem("latest", trade);
                     vis.lastElementChild.style.backgroundColor = "lime";
