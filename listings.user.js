@@ -7,7 +7,7 @@
 // @name                Trade.tf Reloader
 // @namespace           localhost
 // @run-at              document-end
-// @version             1.1.7.9
+// @version             1.1.8.0
 // ==/UserScript==
 
 (function () {
@@ -30,7 +30,7 @@
         toggle.setAttribute("class", "fa fa-toggle-" + (JSON.parse(sessionStorage.getItem(prop)) ? "on" : "off"));
         button.appendChild(toggle);
         button.appendChild(text);
-        document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(button);
+        document.querySelector("div[style^='width: 100%;']").appendChild(button);
     }
 
     function hide(ele, lvls) {
@@ -62,7 +62,7 @@
             reloadTime--;
         }
         else
-            document.getElementsByClassName("btn-reload")[0].click();
+            document.querySelector(".btn-reload").click();
     }
 
     //START OF SCRIPT
@@ -71,7 +71,7 @@ try {
     var listingsPage = window.location.href.match(/^https?:\/\/www\.trade\.tf\/listings\/\d+/);
     /****** END SCRIPT GLOBALS ******/
 
-    document.querySelectorAll("[href*='font-awesome']")[0].href = "//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css";
+    document.querySelector("[href*='font-awesome']").href = "//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css";
     Array.prototype.forEach.call(document.querySelectorAll("[class*='icon']"), function(e) {
         var cls = e.className;
         cls = cls.replace("-check", "-check-square-o");
@@ -88,7 +88,7 @@ try {
         sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
         input.setAttribute("value", sessionStorage.getItem("minProfit"));
         input.setAttribute("style", "float: right; width: 50px; margin-right: 5px; text-align: center;");
-        document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(input);
+        document.querySelector("div[style^='width: 100%;']").appendChild(input);
         addButton("paused", "Paused", false);
         addButton("alert", "Alert", false);
         addButton("unusuals", "Unusuals", false);
@@ -157,12 +157,12 @@ try {
         }
 
         if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
-            var vis = document.querySelectorAll(".trade:not([data-hidden])") || [];
-            if (vis.length) {
-                var trade = vis[0].firstElementChild.children[1].firstElementChild.firstElementChild.firstElementChild.href.slice(28, 37);
+            var vis = document.querySelector(".trade:not([data-hidden])");
+            if (vis) {
+                var trade = vis.firstElementChild.children[1].firstElementChild.firstElementChild.firstElementChild.href.slice(28, 37);
                 if (sessionStorage.getItem("latest") !== trade) {
                     sessionStorage.setItem("latest", trade);
-                    vis[0].lastElementChild.style.backgroundColor = "lime";
+                    vis.lastElementChild.style.backgroundColor = "lime";
                     new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav").play();
                 }
             }
@@ -171,9 +171,9 @@ try {
         var reloadTime = randomTime ? range(randomMin, randomMax) : defaultTime,
             data = document.createElement("small");
         data.setAttribute("style", "color: orange;");
-        document.getElementsByClassName("btn-reload")[0].parentNode.appendChild(data);
-        document.getElementsByClassName("clear-top")[0].firstElementChild.style.clear = "both";
-        document.getElementsByClassName("btn-reload")[0].firstElementChild.className = "fa fa-cog fa-spin";
+        document.querySelector(".btn-reload").parentNode.appendChild(data);
+        document.querySelector(".clear-top").firstElementChild.style.clear = "both";
+        document.querySelector(".btn-reload").firstElementChild.className = "fa fa-cog fa-spin";
         setInterval(showStatus, 1000);
     }
     console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
