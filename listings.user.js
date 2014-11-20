@@ -7,7 +7,7 @@
 // @name                Trade.tf Reloader
 // @namespace           localhost
 // @run-at              document-end
-// @version             1.1.7.8
+// @version             1.1.7.9
 // ==/UserScript==
 
 (function () {
@@ -33,7 +33,7 @@
         document.querySelectorAll("div[style^='width: 100%;']")[0].appendChild(button);
     }
 
-    function filter(ele, lvls) {
+    function hide(ele, lvls) {
         while (lvls--)
             ele = ele.parentNode;
         if (!ele.hasAttribute("data-hidden")) {
@@ -71,17 +71,16 @@ try {
     var listingsPage = window.location.href.match(/^https?:\/\/www\.trade\.tf\/listings\/\d+/);
     /****** END SCRIPT GLOBALS ******/
 
-    document.querySelectorAll("link[href*='font-awesome']")[0].href = "//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css";
-    var old = document.querySelectorAll("i[class*='icon']");
-    for (var a = 0; a < old.length; a++) {
-        var cls = old[a].className;
+    document.querySelectorAll("[href*='font-awesome']")[0].href = "//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css";
+    Array.prototype.forEach.call(document.querySelectorAll("[class*='icon']"), function(e) {
+        var cls = e.className;
         cls = cls.replace("-check", "-check-square-o");
         cls = cls.replace("-info-sign", "-info-circle");
         cls = cls.replace("-ok-circle", "-check-circle-o");
         cls = cls.replace("-time", "-clock-o");
         cls = cls.replace("-white", "-inverse");
-        old[a].className = "fa " + cls.replace(/icon/g, "fa");
-    }
+        e.className = "fa " + cls.replace(/icon/g, "fa");
+    });
 
     if (listingsPage) {
         var input = document.createElement("input");
@@ -103,13 +102,12 @@ try {
                 sessionStorage.setItem("minProfit", this.value);
                 if (JSON.parse(sessionStorage.getItem("paused")))
                     return;
-                var profit = document.querySelectorAll("span.trade-profit");
-                for (var a = 0; a < profit.length; a++) {
-                    if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
-                        setDisplay(profit[a], 3, "none");
-                    else if (!profit[a].parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
-                        setDisplay(profit[a], 3, "");
-                }
+                Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
+                    if (+e.textContent.split("%")[0] < sessionStorage.getItem("minProfit"))
+                        setDisplay(e, 3, "none");
+                    else if (!e.parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
+                        setDisplay(e, 3, "");
+                });
             }
         });
 
@@ -118,61 +116,54 @@ try {
             return;
         }
 
-        var profit = document.querySelectorAll("span.trade-profit");
-        for (var a = 0; a < profit.length; a++) {
-            if (+profit[a].firstChild.nodeValue.split("%")[0] < sessionStorage.getItem("minProfit"))
-                setDisplay(profit[a], 3, "none");
-        }
+        Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
+            if (+e.textContent.split("%")[0] < sessionStorage.getItem("minProfit"))
+                setDisplay(e, 3, "none");
+        });
 
         if (!JSON.parse(sessionStorage.getItem("caution"))) {
-            var caution = document.getElementsByClassName("label-warning");
-            for (var a = 0; a < caution.length; a++)
-                if (caution[a].firstChild.nodeValue.contains("Caution"))
-                    filter(caution[a], 4);
+            Array.prototype.forEach.call(document.getElementsByClassName("label-warning"), function(e) {
+                if (e.textContent.contains("Caution"))
+                    hide(e, 4);
+            });
         }
-        else if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
-            var killstreak = document.getElementsByClassName("label-success");
-            for (var a = 0; a < killstreak.length; a++)
-                if (killstreak[a].firstChild.nodeValue.contains("Killstreak"))
-                    filter(killstreak[a], 7);
+        if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
+            Array.prototype.forEach.call(document.getElementsByClassName("label-success"), function(e) {
+                if (e.textContent.contains("Killstreak"))
+                    hide(e, 7);
+            });
         }
-        else if (!JSON.parse(sessionStorage.getItem("painted"))) {
-            var painted = document.getElementsByClassName("paint1");
-            for (var a = 0; a < painted.length; a++)
-                filter(painted[a], 7);
+        if (!JSON.parse(sessionStorage.getItem("painted"))) {
+            Array.prototype.forEach.call(document.getElementsByClassName("paint1"), function(e) {
+                hide(e, 7);
+            });
         }
-        else if (!JSON.parse(sessionStorage.getItem("parted"))) {
-            var parted = document.getElementsByClassName("label-success");
-            for (var a = 0; a < parted.length; a++)
-                if (parted[a].firstChild.nodeValue.contains("Strange Parts"))
-                    filter(parted[a], 7);
+        if (!JSON.parse(sessionStorage.getItem("parted"))) {
+            Array.prototype.forEach.call(document.getElementsByClassName("label-success"), function(e) {
+                if (e.textContent.contains("Strange Parts"))
+                    hide(e, 7);
+            });
         }
-        else if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
-            var unpriced = document.getElementsByClassName("profit-even");
-            for (var a = 0; a < unpriced.length; a++)
-                if (unpriced[a].firstElementChild.firstChild.nodeValue.contains("n/a"))
-                    filter(unpriced[a], 2);
+        if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
+            Array.prototype.forEach.call(document.getElementsByClassName("profit-even"), function(e) {
+                if (e.firstElementChild.textContent.contains("n/a"))
+                    hide(e, 2);
+            });
         }
-        else if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
-            var unusuals = document.querySelectorAll("img.q-unusual");
-            for (var a = 0; a < unusuals.length; a++)
-                filter(unusuals[a], 7);
+        if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
+            Array.prototype.forEach.call(document.querySelectorAll("img.q-unusual"), function(e) {
+                hide(e, 7);
+            });
         }
 
         if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
-            var latest = document.querySelectorAll("span.trade-profit");
-            if (latest.length) {
-                for (var a = 0; a < latest.length; a++) {
-                    if (!latest[a].parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
-                        break;
-                }
-                if (a !== latest.length) {
-                    var trade = latest[a].parentNode.nextElementSibling.firstElementChild.firstElementChild.firstElementChild.href.slice(28, 37);
-                    if (sessionStorage.getItem("latest") !== trade) {
-                        sessionStorage.setItem("latest", trade);
-                        new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav").play();
-                        latest[a].parentNode.parentNode.nextElementSibling.style.backgroundColor = "lime";
-                    }
+            var vis = document.querySelectorAll(".trade:not([data-hidden])") || [];
+            if (vis.length) {
+                var trade = vis[0].firstElementChild.children[1].firstElementChild.firstElementChild.firstElementChild.href.slice(28, 37);
+                if (sessionStorage.getItem("latest") !== trade) {
+                    sessionStorage.setItem("latest", trade);
+                    vis[0].lastElementChild.style.backgroundColor = "lime";
+                    new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav").play();
                 }
             }
         }
