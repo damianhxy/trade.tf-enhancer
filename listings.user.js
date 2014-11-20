@@ -3,7 +3,7 @@
 // @description         Trade.tf Freemium
 // @downloadURL         https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.user.js
 // @grant               none
-// @include             /^https?:\/\/www\.trade\.tf.*/
+// @include             /^http:\/\/www\.trade\.tf.*/
 // @name                Trade.tf Reloader
 // @namespace           localhost
 // @noframes
