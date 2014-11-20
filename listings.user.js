@@ -6,6 +6,7 @@
 // @include             /^https?:\/\/www\.trade\.tf.*/
 // @name                Trade.tf Reloader
 // @namespace           localhost
+// @noframes
 // @run-at              document-end
 // @version             1.1.8.0
 // ==/UserScript==
