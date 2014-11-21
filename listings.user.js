@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @noframes
 // @run-at              document-end
-// @version             1.1.8.1
+// @version             1.1.8.2
 // ==/UserScript==
 
 (function () {
@@ -117,6 +117,7 @@ try {
 
         if (JSON.parse(sessionStorage.getItem("paused"))) {
             window.document.title = "Trade.tf: Paused";
+            console.info("Trade.tf Script Paused. Version " + GM_info.script.version);
             return;
         }
 
