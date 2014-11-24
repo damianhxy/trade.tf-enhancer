@@ -4,11 +4,11 @@
 // @downloadURL         https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.user.js
 // @grant               none
 // @include             /^http:\/\/www\.trade\.tf.*/
-// @name                Trade.tf Reloader
+// @name                Trade.tf Helper
 // @namespace           localhost
 // @noframes
 // @run-at              document-end
-// @version             1.1.8.2
+// @version             1.1.8.3
 // ==/UserScript==
 
 (function () {
@@ -178,7 +178,7 @@ try {
         data.setAttribute("style", "color: orange;");
         document.querySelector(".btn-reload").parentNode.appendChild(data);
         document.querySelector(".clear-top").firstElementChild.style.clear = "both";
-        document.querySelector(".btn-reload").firstElementChild.className = "fa fa-cog fa-spin";
+        document.querySelector(".btn-reload").firstElementChild.className += " fa-spin";
         setInterval(showStatus, 1000);
     }
     console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
