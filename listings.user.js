@@ -1,14 +1,14 @@
 // ==UserScript==
 // @copyright           2014, Damian Ho
-// @description         Trade.tf Freemium
+// @description         Helper script for Trade.tf
 // @downloadURL         https://github.com/damianhxy/Trade.tf-Freemium/raw/master/listings.user.js
 // @grant               none
 // @include             /^http:\/\/www\.trade\.tf.*/
-// @name                Trade.tf Helper
+// @name                Trade.tf Enhancer
 // @namespace           localhost
 // @noframes
 // @run-at              document-end
-// @version             1.1.8.3
+// @version             1.1.8.4
 // ==/UserScript==
 
 (function () {
@@ -19,7 +19,6 @@
         randomMax = 20;              //[seconds] maximum random reload time
     /******** END OF SETTINGS *******/
 
-    //FUNCTION DECLARATIONS
     function addButton(prop, val, def) {
         sessionStorage.setItem(prop, sessionStorage.getItem(prop) || def);
         var button = document.createElement("a"),
@@ -68,7 +67,6 @@
             document.querySelector(".btn-reload").click();
     }
 
-    //START OF SCRIPT
 try {
     /******** SCRIPT GLOBALS ********/
     var listingsPage = window.location.href.match(/^https?:\/\/www\.trade\.tf\/listings\/\d+/);
@@ -92,7 +90,7 @@ try {
         sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
         input.setAttribute("value", sessionStorage.getItem("minProfit"));
         input.setAttribute("style", "float: right; width: 50px; margin-right: 5px; text-align: center;");
-        document.querySelector("div[style^='width: 100%;']").appendChild(input);
+        document.querySelector("div[style^='width: 100%']").appendChild(input);
         addButton("paused", "Paused", false);
         addButton("alert", "Alert", false);
         addButton("unusuals", "Unusuals", false);
