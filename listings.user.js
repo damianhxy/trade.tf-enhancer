@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @noframes
 // @run-at              document-end
-// @version             1.1.8.4
+// @version             1.1.8.5
 // ==/UserScript==
 
 (function () {
@@ -28,8 +28,8 @@
         button.setAttribute("style", "margin-right: 5px; width: 100px;");
         button.setAttribute("onclick", "sessionStorage.setItem('" + prop +
                             "', !JSON.parse(sessionStorage.getItem('" + prop + "'))); location.reload();");
-        button.setAttribute("class", "btn btn-" + (activated ? "success" : "danger") + " btn-sm pull-right");
-        toggle.setAttribute("class", "fa fa-toggle-" + (activated ? "on" : "off"));
+        button.className = "btn btn-" + (activated ? "success" : "danger") + " btn-sm pull-right";
+        toggle.className = "fa fa-toggle-" + (activated ? "on" : "off");
         button.appendChild(toggle);
         button.appendChild(text);
         document.querySelector("div[style^='width: 100%;']").appendChild(button);
