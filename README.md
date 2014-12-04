@@ -1,4 +1,4 @@
-Trade.tf-Freemium
+Trade.tf-Enhancer
 =================
 
 Converts All Listings into a poor man's Live Deals
