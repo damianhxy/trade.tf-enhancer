@@ -8,7 +8,7 @@
 // @namespace           localhost
 // @noframes
 // @run-at              document-end
-// @version             1.1.8.6
+// @version             1.1.8.7
 // ==/UserScript==
 
 (function () {
@@ -37,24 +37,16 @@
         document.querySelector("div[style^='width: 100%;']").appendChild(button);
     }
 
-    function hide(ele, lvls) {
-        while (lvls--)
-            ele = ele.parentNode;
-        if (!ele.hasAttribute("data-hidden")) {
-            ele.setAttribute("data-hidden", "");
-            ele.style.display = "none";
-        }
-    }
-
     function range(lo, hi) {
         return Math.floor(Math.random() * (hi - lo + 1)) + lo;
     }
 
-    function setDisplay(ele, lvls, disp) {
+    function setDisplay(ele, lvls, disp, hide) {
         while (lvls--)
             ele = ele.parentNode;
-        if (ele.style.display !== disp)
-            ele.style.display = disp;
+        ele.style.display = disp;
+        if (hide === true)
+            ele.setAttribute("data-hidden", "");
     }
 
     function showStatus() {
@@ -129,35 +121,35 @@ try {
         if (!JSON.parse(sessionStorage.getItem("caution"))) {
             Array.prototype.forEach.call(document.getElementsByClassName("label-warning"), function(e) {
                 if (e.textContent.contains("Caution"))
-                    hide(e, 4);
+                    setDisplay(e, 4, "none", true);
             });
         }
         if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
             Array.prototype.forEach.call(document.getElementsByClassName("label-success"), function(e) {
                 if (e.textContent.contains("Killstreak"))
-                    hide(e, 7);
+                    setDisplay(e, 7, "none", true);
             });
         }
         if (!JSON.parse(sessionStorage.getItem("painted"))) {
             Array.prototype.forEach.call(document.getElementsByClassName("paint1"), function(e) {
-                hide(e, 7);
+                setDisplay(e, 7, "none", true);
             });
         }
         if (!JSON.parse(sessionStorage.getItem("parted"))) {
             Array.prototype.forEach.call(document.getElementsByClassName("label-success"), function(e) {
                 if (e.textContent.contains("Strange Parts"))
-                    hide(e, 7);
+                    setDisplay(e, 7, "none", true);
             });
         }
         if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
             Array.prototype.forEach.call(document.getElementsByClassName("profit-even"), function(e) {
                 if (e.firstElementChild.textContent.contains("n/a"))
-                    hide(e, 2);
+                    setDisplay(e, 2, "none", true);
             });
         }
         if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
             Array.prototype.forEach.call(document.querySelectorAll("img.q-unusual"), function(e) {
-                hide(e, 7);
+                setDisplay(e, 7, "none", true);
             });
         }
 
