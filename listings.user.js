@@ -5,7 +5,7 @@
 // @grant               none
 // @include             /^http:\/\/www\.trade\.tf.*/
 // @name                Trade.tf Enhancer
-// @namespace           localhost
+// @namespace           https://bitbucket.org/
 // @noframes
 // @run-at              document-end
 // @version             1.1.8.9
