@@ -7,7 +7,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.1.9.1
+// @version             1.1.9.2
 // ==/UserScript==
 
 (function () {
@@ -54,8 +54,8 @@
         if (reloadTime) {
             var min = Math.floor(reloadTime / 60),
                 sec = reloadTime % 60;
-            window.document.title = "Trade.tf: " + min + ":" + ("0" + sec).slice(-2);
-            data.innerHTML = " Reloading in: " + min + ":" + ("0" + sec).slice(-2);
+            document.title = "Trade.tf: " + min + ":" + ("0" + sec).slice(-2);
+            data.textContent = " Reloading in: " + min + ":" + ("0" + sec).slice(-2);
             reloadTime--;
         } else
             document.querySelector(".btn-reload").click();
@@ -63,7 +63,7 @@
 
     try {
         /******** SCRIPT GLOBALS ********/
-        var listingsPage = /^http:\/\/www\.trade\.tf\/listings\/\d+$/.test(window.location.href);
+        var listingsPage = /^http:\/\/www\.trade\.tf\/listings\/\d+$/.test(document.URL);
         /****** END SCRIPT GLOBALS ******/
 
         var style = document.querySelector("[href*='font-awesome']");
@@ -96,21 +96,20 @@
             input.addEventListener("keyup", function() {
                 if (isFinite(this.value) && this.value.length) {
                     sessionStorage.setItem("minProfit", this.value);
-                    if (JSON.parse(sessionStorage.getItem("paused")))
-                        return;
-                    Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
-                        if (+e.textContent.split("%")[0] < sessionStorage.getItem("minProfit"))
-                            setDisplay(e, 3, "none");
-                        else if (!e.parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
-                            setDisplay(e, 3, "");
-                    });
+                    if (!JSON.parse(sessionStorage.getItem("paused"))) {
+                        Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
+                            if (+e.textContent.split("%")[0] < sessionStorage.getItem("minProfit"))
+                                setDisplay(e, 3, "none");
+                            else if (!e.parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
+                                setDisplay(e, 3, "");
+                        });
+                    }
                 }
             });
 
             if (JSON.parse(sessionStorage.getItem("paused"))) {
-                window.document.title = "Trade.tf: Paused";
-                console.info("Trade.tf Script Paused. Version " + GM_info.script.version);
-                return;
+                document.title = "Trade.tf: Paused";
+                return console.info("Trade.tf Script Paused. Version " + GM_info.script.version);
             }
 
             Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
@@ -175,6 +174,6 @@
         }
         console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
     } catch(e) {
-        alert("[An error has occured]\n" + e.message + "\n[Stack Trace]\n" + e.stack);
+        alert("[A fatal error has occured]\n" + e.message + "\n[Stack Trace]\n" + e.stack);
     }
 })();
