@@ -1,13 +1,14 @@
 // ==UserScript==
 // @copyright           2014, Damian Ho
 // @description         Helper script for Trade.tf
+// @downloadURL         https://bitbucket.org/damianhxy/trade.tf-enhancer/raw/master/listings.user.js
 // @grant               none
 // @include             /^http:\/\/www\.trade\.tf.*/
 // @name                Trade.tf Enhancer
 // @namespace           https://bitbucket.org/
 // @noframes
 // @run-at              document-end
-// @version             1.1.8.9
+// @version             1.1.9.0
 // ==/UserScript==
 
 (function () {
