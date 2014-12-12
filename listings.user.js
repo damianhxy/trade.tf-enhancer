@@ -2,13 +2,12 @@
 // @copyright           2014, Damian Ho
 // @description         Helper script for Trade.tf
 // @downloadURL         https://bitbucket.org/damianhxy/trade.tf-enhancer/raw/master/listings.user.js
-// @grant               none
-// @include             /^http:\/\/www\.trade\.tf.*/
+// @include             /^http:\/\/www\.trade\.tf.*$/
 // @name                Trade.tf Enhancer
-// @namespace           https://bitbucket.org/
+// @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.1.9.0
+// @version             1.1.9.1
 // ==/UserScript==
 
 (function () {
@@ -19,27 +18,18 @@
         randomMax = 20;              //[seconds] maximum random reload time
     /******** END OF SETTINGS *******/
 
-    function addButton(prop, val, def, global) {
-        if (global)
-            localStorage.setItem(prop, localStorage.getItem(prop) || def);
-        else
-            sessionStorage.setItem(prop, sessionStorage.getItem(prop) || def);
+    function addButton(prop, val, def) {
         var button = document.createElement("a"),
             toggle = document.createElement("i"),
             text = document.createTextNode(" " + val),
             activated;
-        if (global)
-            activated = JSON.parse(localStorage.getItem(prop));
-        else
-            activated = JSON.parse(sessionStorage.getItem(prop));
+        sessionStorage.setItem(prop, sessionStorage.getItem(prop) || def);
+        activated = JSON.parse(sessionStorage.getItem(prop));
         button.style = "margin-right: 5px; width: 100px;";
         button.className = "btn btn-" + (activated ? "success" : "danger") + " btn-sm pull-right";
         button.addEventListener("click", function() {
             window.stop();
-            if (global)
-                localStorage.setItem(prop, !JSON.parse(localStorage.getItem(prop)));
-            else
-                sessionStorage.setItem(prop, !JSON.parse(sessionStorage.getItem(prop)));
+            sessionStorage.setItem(prop, !JSON.parse(sessionStorage.getItem(prop)));
             location.reload();
         });
         toggle.className = "fa fa-toggle-" + (activated ? "on" : "off");
@@ -73,7 +63,7 @@
 
     try {
         /******** SCRIPT GLOBALS ********/
-        var listingsPage = window.location.href.match(/^https?:\/\/www\.trade\.tf\/listings\/\d+/);
+        var listingsPage = /^http:\/\/www\.trade\.tf\/listings\/\d+$/.test(window.location.href);
         /****** END SCRIPT GLOBALS ******/
 
         var style = document.querySelector("[href*='font-awesome']");
@@ -95,18 +85,18 @@
             input.setAttribute("value", sessionStorage.getItem("minProfit"));
             input.setAttribute("style", "float: right; width: 50px; margin-right: 5px; text-align: center;");
             document.querySelector("div[style^='width: 100%']").appendChild(input);
-            addButton("paused", "Paused", 0, 1);
-            addButton("alert", "Alert", 0);
-            addButton("unusuals", "Unusuals", 0);
-            addButton("unpriced", "N/A", 1);
-            addButton("parted", "Parted", 1);
-            addButton("painted", "Painted", 1);
-            addButton("killstreak", "Killstreak", 1);
-            addButton("caution", "Caution", 1);
+            addButton("paused", "Paused", false);
+            addButton("alert", "Alert", false);
+            addButton("unusuals", "Unusuals", false);
+            addButton("unpriced", "N/A", true);
+            addButton("parted", "Parted", true);
+            addButton("painted", "Painted", true);
+            addButton("killstreak", "Killstreak", true);
+            addButton("caution", "Caution", true);
             input.addEventListener("keyup", function() {
                 if (isFinite(this.value) && this.value.length) {
                     sessionStorage.setItem("minProfit", this.value);
-                    if (JSON.parse(localStorage.getItem("paused")))
+                    if (JSON.parse(sessionStorage.getItem("paused")))
                         return;
                     Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
                         if (+e.textContent.split("%")[0] < sessionStorage.getItem("minProfit"))
@@ -117,7 +107,7 @@
                 }
             });
 
-            if (JSON.parse(localStorage.getItem("paused"))) {
+            if (JSON.parse(sessionStorage.getItem("paused"))) {
                 window.document.title = "Trade.tf: Paused";
                 console.info("Trade.tf Script Paused. Version " + GM_info.script.version);
                 return;
@@ -131,35 +121,35 @@
             if (!JSON.parse(sessionStorage.getItem("caution"))) {
                 Array.prototype.forEach.call(document.getElementsByClassName("label-warning"), function(e) {
                     if (e.textContent.contains("Caution"))
-                        setDisplay(e, 4, "none", 1);
+                        setDisplay(e, 4, "none", true);
                 });
             }
             if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
                 Array.prototype.forEach.call(document.getElementsByClassName("label-success"), function(e) {
                     if (e.textContent.contains("Killstreak"))
-                        setDisplay(e, 7, "none", 1);
+                        setDisplay(e, 7, "none", true);
                 });
             }
             if (!JSON.parse(sessionStorage.getItem("painted"))) {
                 Array.prototype.forEach.call(document.getElementsByClassName("paint1"), function(e) {
-                    setDisplay(e, 7, "none", 1);
+                    setDisplay(e, 7, "none", true);
                 });
             }
             if (!JSON.parse(sessionStorage.getItem("parted"))) {
                 Array.prototype.forEach.call(document.getElementsByClassName("label-success"), function(e) {
                     if (e.textContent.contains("Strange Parts"))
-                        setDisplay(e, 7, "none", 1);
+                        setDisplay(e, 7, "none", true);
                 });
             }
             if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
                 Array.prototype.forEach.call(document.getElementsByClassName("profit-even"), function(e) {
                     if (e.firstElementChild.textContent.contains("n/a"))
-                        setDisplay(e, 2, "none", 1);
+                        setDisplay(e, 2, "none", true);
                 });
             }
             if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
                 Array.prototype.forEach.call(document.querySelectorAll("img.q-unusual"), function(e) {
-                    setDisplay(e, 7, "none", 1);
+                    setDisplay(e, 7, "none", true);
                 });
             }
 
@@ -177,7 +167,7 @@
 
             var reloadTime = randomTime ? range(randomMin, randomMax) : defaultTime,
                 data = document.createElement("small");
-            data.setAttribute("style", "color: orange;");
+            data.style = "color: orange;";
             document.querySelector(".btn-reload").parentNode.appendChild(data);
             document.querySelector(".clear-top").firstElementChild.style.clear = "both";
             document.querySelector(".btn-reload").firstElementChild.className += " fa-spin";
