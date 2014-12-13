@@ -7,7 +7,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.1.9.2
+// @version             1.1.9.3
 // ==/UserScript==
 
 (function () {
@@ -57,8 +57,10 @@
             document.title = "Trade.tf: " + min + ":" + ("0" + sec).slice(-2);
             data.textContent = " Reloading in: " + min + ":" + ("0" + sec).slice(-2);
             reloadTime--;
-        } else
+        } else {
             document.querySelector(".btn-reload").click();
+            clearInterval(showStatus);
+        }
     }
 
     try {
@@ -80,10 +82,9 @@
 
         if (listingsPage) {
             var input = document.createElement("input");
-
             sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
             input.setAttribute("value", sessionStorage.getItem("minProfit"));
-            input.setAttribute("style", "float: right; width: 50px; margin-right: 5px; text-align: center;");
+            input.style = "float: right; width: 50px; margin-right: 5px; text-align: center;";
             document.querySelector("div[style^='width: 100%']").appendChild(input);
             addButton("paused", "Paused", false);
             addButton("alert", "Alert", false);
