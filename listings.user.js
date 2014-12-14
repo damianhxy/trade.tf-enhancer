@@ -7,7 +7,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.1.9.3
+// @version             1.1.9.4
 // ==/UserScript==
 
 (function () {
@@ -22,9 +22,8 @@
         var button = document.createElement("a"),
             toggle = document.createElement("i"),
             text = document.createTextNode(" " + val),
-            activated;
+            activated = JSON.parse(sessionStorage.getItem(prop));
         sessionStorage.setItem(prop, sessionStorage.getItem(prop) || def);
-        activated = JSON.parse(sessionStorage.getItem(prop));
         button.style = "margin-right: 5px; width: 100px;";
         button.className = "btn btn-" + (activated ? "success" : "danger") + " btn-sm pull-right";
         button.addEventListener("click", function() {
