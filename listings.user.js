@@ -7,7 +7,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.1.9.8
+// @version             1.1.9.9
 // ==/UserScript==
 
 (function () {
@@ -103,7 +103,7 @@
                     sessionStorage.setItem("minProfit", this.value);
                     if (!JSON.parse(sessionStorage.getItem("paused"))) {
                         Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
-                            if (+e.textContent.match(/-?\d+\.?\d+/) < +sessionStorage.getItem("minProfit"))
+                            if (+e.textContent.match(/-?\d+(\.\d+)?/) < +sessionStorage.getItem("minProfit"))
                                 setDisplay(e, 3, "none");
                             else if (!e.parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
                                 setDisplay(e, 3, "");
@@ -116,7 +116,7 @@
                 return console.info("Trade.tf Script Paused. Version " + GM_info.script.version);
             }
             Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
-                if (+e.textContent.match(/-?\d+\.?\d+/) < +sessionStorage.getItem("minProfit"))
+                if (+e.textContent.match(/-?\d+(\.\d+)?/) < +sessionStorage.getItem("minProfit"))
                     setDisplay(e, 3, "none");
             });
             if (!JSON.parse(sessionStorage.getItem("caution"))) {
