@@ -104,7 +104,7 @@
                     sessionStorage.setItem("minProfit", this.value);
                     if (!JSON.parse(sessionStorage.getItem("paused"))) {
                         Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
-                            if (+e.textContent.split("%")[0] < sessionStorage.getItem("minProfit"))
+                            if (+e.textContent.match(/\d+/) < +sessionStorage.getItem("minProfit"))
                                 setDisplay(e, 3, "none");
                             else if (!e.parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
                                 setDisplay(e, 3, "");
