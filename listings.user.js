@@ -7,7 +7,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.1.9.4
+// @version             1.1.9.5
 // ==/UserScript==
 
 (function () {
@@ -31,10 +31,18 @@
             sessionStorage.setItem(prop, !JSON.parse(sessionStorage.getItem(prop)));
             location.reload();
         });
-        toggle.className = "fa fa-toggle-" + (activated ? "on" : "off");
-        button.appendChild(toggle);
+        button.appendChild(createIcon("toggle-" + (activated ? "on" : "off"), "border: none;"));
         button.appendChild(text);
         document.querySelector("div[style^='width: 100%;']").appendChild(button);
+    }
+
+    function createIcon(cls, style, content) {
+        var icon = document.createElement("i");
+        icon.className = "fa fa-" + cls + " fa-inverse fa-border pull-left";
+        icon.style = style;
+        if (content)
+            icon.appendChild(document.createTextNode(content));
+        return icon;
     }
 
     function range(lo, hi) {
@@ -71,11 +79,9 @@
         style.href = style.href.replace("3.2.1", "4.2.0");
         Array.prototype.forEach.call(document.querySelectorAll("[class*='icon']"), function(e) {
             var cls = e.className;
-            cls = cls.replace("-check", "-check-square-o");
-            cls = cls.replace("-info-sign", "-info-circle");
-            cls = cls.replace("-ok-circle", "-check-circle-o");
-            cls = cls.replace("-time", "-clock-o");
-            cls = cls.replace("-white", "-inverse");
+            cls = cls.replace("-check", "-check-square-o").replace("-info-sign", "-info-circle")
+                     .replace("-ok-circle", "-check-circle-o").replace("-time", "-clock-o")
+                     .replace("-white", "-inverse");
             e.className = "fa " + cls.replace(/icon/g, "fa");
         });
 
@@ -106,17 +112,14 @@
                     }
                 }
             });
-
             if (JSON.parse(sessionStorage.getItem("paused"))) {
                 document.title = "Trade.tf: Paused";
                 return console.info("Trade.tf Script Paused. Version " + GM_info.script.version);
             }
-
             Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
-                if (+e.textContent.split("%")[0] < sessionStorage.getItem("minProfit"))
+                if (+e.textContent.match(/\d+/) < +sessionStorage.getItem("minProfit"))
                     setDisplay(e, 3, "none");
             });
-
             if (!JSON.parse(sessionStorage.getItem("caution"))) {
                 Array.prototype.forEach.call(document.getElementsByClassName("label-warning"), function(e) {
                     if (e.textContent.contains("Caution"))
@@ -169,7 +172,7 @@
             data.style = "color: orange;";
             document.querySelector(".btn-reload").parentNode.appendChild(data);
             document.querySelector(".clear-top").firstElementChild.style.clear = "both";
-            document.querySelector(".btn-reload").firstElementChild.className += " fa-spin";
+            document.querySelector(".btn-reload").firstElementChild.classList.add("fa-spin");
             setInterval(showStatus, 1000);
         }
         console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
