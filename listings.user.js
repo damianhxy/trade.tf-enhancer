@@ -7,7 +7,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.0.1
+// @version             1.2.0.2
 // ==/UserScript==
 
 (function () {
@@ -35,6 +35,13 @@
         document.querySelector("div[style^='width: 100%;']").appendChild(button);
     }
 
+    function check(element, toggle, query, content) {
+        if (!JSON.parse(sessionStorage.getItem(toggle)))
+            if (element.querySelector("." + query))
+                return content ? query.textContent.contains(content) : true;
+        return false;
+    }
+
     function createIcon(cls, style, content) {
         var icon = document.createElement("i");
         icon.className = "fa fa-" + cls + " fa-inverse fa-border pull-left";
@@ -46,14 +53,6 @@
 
     function range(lo, hi) {
         return Math.floor(Math.random() * (hi - lo + 1)) + lo;
-    }
-
-    function setDisplay(ele, lvls, disp, hide) {
-        while (lvls--)
-            ele = ele.parentNode;
-        ele.style.display = disp;
-        if (hide)
-            ele.setAttribute("data-hidden", "");
     }
 
     function showStatus() {
@@ -102,11 +101,13 @@
                 if (isFinite(this.value) && this.value) {
                     sessionStorage.setItem("minProfit", this.value);
                     if (!JSON.parse(sessionStorage.getItem("paused"))) {
-                        Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
-                            if (+e.textContent.match(/-?(?:\d+\.)?\d+?/) < +sessionStorage.getItem("minProfit"))
-                                setDisplay(e, 3, "none");
-                            else if (!e.parentNode.parentNode.parentNode.hasAttribute("data-hidden"))
-                                setDisplay(e, 3, "");
+                        Array.prototype.forEach.call(document.getElementsByClassName("trade"), function(e) {
+                            var profit = e.querySelector("span.trade-profit").textContent;
+                            if (+profit.match(/-?(?:\d+\.)?\d+?/) < +sessionStorage.getItem("minProfit")) {
+                                e.style.display = "none";
+                            }
+                            else if (!e.hasAttribute("data-hidden"))
+                                e.style.display = "";
                         });
                     }
                 }
@@ -115,44 +116,21 @@
                 document.title = "Trade.tf: Paused";
                 return console.info("Trade.tf Script Paused. Version " + GM_info.script.version);
             }
-            Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
-                if (+e.textContent.match(/-?(?:\d+\.)?\d+?/) < +sessionStorage.getItem("minProfit"))
-                    setDisplay(e, 3, "none");
+            Array.prototype.forEach.call(document.getElementsByClassName("trade"), function(e) {
+                var profit = e.querySelector("span.trade-profit").textContent;
+                if (+profit.match(/-?(?:\d+\.)?\d+?/) < +sessionStorage.getItem("minProfit")) {
+                    e.style.display = "none";
+                }
+                else if (check(e, "caution", "label-warning", "Caution") ||
+                         check(e, "killstreak", "label-success", "Killstreak") ||
+                         check(e, "painted", "paint1") ||
+                         check(e, "parted", "label-success", "Strange Parts") ||
+                         check(e, "unpriced", "label", "Unconfirmed deal") ||
+                         check(e, "unusuals", "q-unusual")) {
+                    e.style.display = "none";
+                    e.setAttribute("data-hidden", "");
+                }
             });
-            if (!JSON.parse(sessionStorage.getItem("caution"))) {
-                Array.prototype.forEach.call(document.getElementsByClassName("label-warning"), function(e) {
-                    if (e.textContent.contains("Caution"))
-                        setDisplay(e, 4, "none", true);
-                });
-            }
-            if (!JSON.parse(sessionStorage.getItem("killstreak"))) {
-                Array.prototype.forEach.call(document.getElementsByClassName("label-success"), function(e) {
-                    if (e.textContent.contains("Killstreak"))
-                        setDisplay(e, 7, "none", true);
-                });
-            }
-            if (!JSON.parse(sessionStorage.getItem("painted"))) {
-                Array.prototype.forEach.call(document.getElementsByClassName("paint1"), function(e) {
-                    setDisplay(e, 7, "none", true);
-                });
-            }
-            if (!JSON.parse(sessionStorage.getItem("parted"))) {
-                Array.prototype.forEach.call(document.getElementsByClassName("label-success"), function(e) {
-                    if (e.textContent.contains("Strange Parts"))
-                        setDisplay(e, 7, "none", true);
-                });
-            }
-            if (!JSON.parse(sessionStorage.getItem("unpriced"))) {
-                Array.prototype.forEach.call(document.getElementsByClassName("profit-even"), function(e) {
-                    if (e.firstElementChild.textContent.contains("n/a"))
-                        setDisplay(e, 2, "none", true);
-                });
-            }
-            if (!JSON.parse(sessionStorage.getItem("unusuals"))) {
-                Array.prototype.forEach.call(document.querySelectorAll("img.q-unusual"), function(e) {
-                    setDisplay(e, 7, "none", true);
-                });
-            }
 
             if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
                 var vis = document.querySelector(".trade:not([data-hidden])");
@@ -165,7 +143,7 @@
                             var msg = "New Deal: " +
                                       vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/) + "%" +
                                       vis.querySelector("[href^='/r/trade']").childNodes[2].textContent;
-                            Notification.permission === "granted" ? new Notification(msg) : alert(msg);
+                            permission === "granted" ? new Notification(msg) : alert(msg);
                         });
                     }
                 }
