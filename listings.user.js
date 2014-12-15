@@ -7,7 +7,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.0
+// @version             1.2.0.1
 // ==/UserScript==
 
 (function () {
@@ -93,13 +93,13 @@
             addButton("paused", "Paused", false);
             addButton("alert", "Alert", false);
             addButton("unusuals", "Unusuals", false);
-            addButton("unpriced", "N/A", true);
+            addButton("unpriced", "Unpriced", true);
             addButton("parted", "Parted", true);
             addButton("painted", "Painted", true);
             addButton("killstreak", "Killstreak", true);
             addButton("caution", "Caution", true);
             input.addEventListener("keyup", function() {
-                if (isFinite(this.value) && this.value.length) {
+                if (isFinite(this.value) && this.value) {
                     sessionStorage.setItem("minProfit", this.value);
                     if (!JSON.parse(sessionStorage.getItem("paused"))) {
                         Array.prototype.forEach.call(document.querySelectorAll("span.trade-profit"), function(e) {
@@ -161,7 +161,12 @@
                     if (sessionStorage.getItem("latest") !== trade) {
                         sessionStorage.setItem("latest", trade);
                         vis.lastElementChild.style.backgroundColor = "lime";
-                        new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav").play();
+                        Notification.requestPermission(function(permission) {
+                            var msg = "New Deal: " +
+                                      vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/) + "%" +
+                                      vis.querySelector("[href^='/r/trade']").childNodes[2].textContent;
+                            Notification.permission === "granted" ? new Notification(msg) : alert(msg);
+                        });
                     }
                 }
             }
