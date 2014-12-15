@@ -7,7 +7,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.0.2
+// @version             1.2.0.3
 // ==/UserScript==
 
 (function () {
@@ -70,7 +70,9 @@
 
     try {
         /******** SCRIPT GLOBALS ********/
-        var listingsPage = /^http:\/\/www\.trade\.tf\/listings\/\d+$/.test(document.URL);
+        var listingsPage = /^http:\/\/www\.trade\.tf\/listings\/\d+$/.test(document.URL),
+            alertIcon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/e6/" +
+                        "e6ff6859b1c96e923a5051d54ee1f6e35c45094b_full.jpg";
         /****** END SCRIPT GLOBALS ******/
 
         var style = document.querySelector("[href*='font-awesome']");
@@ -105,9 +107,12 @@
                             var profit = e.querySelector("span.trade-profit").textContent;
                             if (+profit.match(/-?(?:\d+\.)?\d+?/) < +sessionStorage.getItem("minProfit")) {
                                 e.style.display = "none";
+                                e.setAttribute("data-noprofit", "");
                             }
-                            else if (!e.hasAttribute("data-hidden"))
+                            else if (!e.hasAttribute("data-hidden")) {
                                 e.style.display = "";
+                                e.removeAttribute("data-noprofit");
+                            }
                         });
                     }
                 }
@@ -120,6 +125,7 @@
                 var profit = e.querySelector("span.trade-profit").textContent;
                 if (+profit.match(/-?(?:\d+\.)?\d+?/) < +sessionStorage.getItem("minProfit")) {
                     e.style.display = "none";
+                    e.setAttribute("data-noprofit", "");
                 }
                 else if (check(e, "caution", "label-warning", "Caution") ||
                          check(e, "killstreak", "label-success", "Killstreak") ||
@@ -133,17 +139,24 @@
             });
 
             if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
-                var vis = document.querySelector(".trade:not([data-hidden])");
+                var vis = document.querySelector(".trade:not([data-hidden]):not([data-noprofit])");
                 if (vis) {
                     var trade = vis.querySelector("[href]").href.slice(28, 37);
                     if (sessionStorage.getItem("latest") !== trade) {
                         sessionStorage.setItem("latest", trade);
                         vis.lastElementChild.style.backgroundColor = "lime";
                         Notification.requestPermission(function(permission) {
-                            var msg = "New Deal: " +
-                                      vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/) + "%" +
-                                      vis.querySelector("[href^='/r/trade']").childNodes[2].textContent;
-                            permission === "granted" ? new Notification(msg) : alert(msg);
+                            var msg = "Good Deal",
+                                data = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/) +
+                                       "%" + vis.querySelector("[href^='/r/trade']").childNodes[2].textContent;
+                            if (permission === "granted") {
+                                var modal = new Notification(msg, {body: data, icon: alertIcon});
+                                modal.onclick = function() {
+                                    alert("Brought Tab to Foreground");
+                                }
+                            }
+                            else
+                                alert(msg + ": " + data);
                         });
                     }
                 }
