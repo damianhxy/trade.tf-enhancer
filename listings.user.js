@@ -7,7 +7,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.0.3
+// @version             1.2.0.4
 // ==/UserScript==
 
 (function () {
@@ -24,13 +24,13 @@
             text = document.createTextNode(" " + val),
             activated = JSON.parse(sessionStorage.getItem(prop));
         button.style = "margin-right: 5px; width: 100px;";
-        button.className = "btn btn-" + (activated ? "success" : "danger") + " btn-sm pull-right";
+        button.className = "btn btn-" + ["danger", "success"][+activated] + " btn-sm pull-right";
         button.addEventListener("click", function() {
             window.stop();
             sessionStorage.setItem(prop, !JSON.parse(sessionStorage.getItem(prop)));
             location.reload();
         });
-        button.appendChild(createIcon("toggle-" + (activated ? "on" : "off"), "border: none;"));
+        button.appendChild(createIcon("toggle-" + ["off", "on"][+activated], "border: none;"));
         button.appendChild(text);
         document.querySelector("div[style^='width: 100%;']").appendChild(button);
     }
