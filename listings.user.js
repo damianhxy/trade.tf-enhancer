@@ -7,7 +7,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.0.5
+// @version             1.2.0.6
 // ==/UserScript==
 
 (function () {
@@ -65,7 +65,7 @@
             data.textContent = " Reloading in: " + min + ":" + ("0" + sec).slice(-2);
             reloadTime--;
         } else {
-            document.querySelector(".btn-reload").click();
+            location.reload(true);
             clearInterval(showStatus);
         }
     }
