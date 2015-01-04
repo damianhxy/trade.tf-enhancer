@@ -3,11 +3,12 @@
 // @description         Helper script for Trade.tf
 // @downloadURL         https://bitbucket.org/damianhxy/trade.tf-enhancer/raw/master/listings.user.js
 // @include             /^http:\/\/www\.trade\.tf.*$/
+// @exclude             /^http:\/\/www\.trade\.tf\/user\/mybot\/trades\/\d{17}\/offer$/
 // @name                Trade.tf Enhancer
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.0.6
+// @version             1.2.0.7
 // ==/UserScript==
 
 (function () {
@@ -143,22 +144,28 @@
             if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
                 var vis = document.querySelector(".trade:not([data-hidden]):not([data-noprofit])");
                 if (vis) {
-                    var trade = vis.querySelector("[href]").href.slice(28, 37);
+                    var trade = vis.querySelector("a").href.slice(28, 37);
                     if (sessionStorage.getItem("latest") !== trade) {
                         sessionStorage.setItem("latest", trade);
                         vis.lastElementChild.style.backgroundColor = "lime";
                         Notification.requestPermission(function(permission) {
-                            var msg = "Good Deal",
-                                data = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/) +
-                                       "%" + vis.querySelector("[href^='/r/trade']").childNodes[2].textContent;
+                            var header = "Trade.tf Enhancer",
+                                amt = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/) + "%",
+                                loc = vis.querySelector("[href^='/r/trade']").childNodes[2].textContent,
+                                comp = vis.querySelector("div.trade-profit").getAttribute("data-original-title")
+                                                                            .split("</u> "),
+                                msg = amt + loc + "\n[V] " + comp[1].split("<br/>")[0] + " [W] " + comp[2];
                             if (permission === "granted") {
-                                var modal = new Notification(msg, {body: data, icon: alertIcon});
-                                modal.onclick = function() {
-                                    alert("Go get it!");
-                                };
+                                var modal = new Notification(header, {
+                                    body: msg,
+                                    icon: alertIcon
+                                });
+                                modal.addEventListener("click", function() {
+                                    alert("Go Go Go!");
+                                });
                             }
                             else
-                                alert(msg + ": " + data);
+                                new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav").play();
                         });
                     }
                 }
