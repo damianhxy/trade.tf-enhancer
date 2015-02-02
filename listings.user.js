@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.0.7
+// @version             1.2.0.8
 // ==/UserScript==
 
 (function () {
@@ -97,7 +97,7 @@
             addButton("paused", "Paused", false);
             addButton("alert", "Alert", false);
             addButton("unusuals", "Unusuals", false);
-            addButton("unpriced", "Unpriced", true);
+            addButton("gifted", "Gifted", true);
             addButton("parted", "Parted", true);
             addButton("painted", "Painted", true);
             addButton("killstreak", "Killstreak", true);
@@ -134,7 +134,7 @@
                          check(e, "killstreak", "label-success", "Killstreak") ||
                          check(e, "painted", "paint1") ||
                          check(e, "parted", "label-success", "Strange Parts") ||
-                         check(e, "unpriced", "label", "Unconfirmed deal") ||
+                         check(e, "gifted", "label-important", "Gifted") ||
                          check(e, "unusuals", "q-unusual")) {
                     e.style.display = "none";
                     e.setAttribute("data-hidden", "");
