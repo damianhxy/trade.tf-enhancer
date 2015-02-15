@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.0.8
+// @version             1.2.0.9
 // ==/UserScript==
 
 (function () {
@@ -79,7 +79,7 @@
         /****** END SCRIPT GLOBALS ******/
 
         var style = document.querySelector("[href*='font-awesome']");
-        style.href = style.href.replace("3.2.1", "4.2.0");
+        style.href = style.href.replace("3.2.1", "4.3.0");
         Array.prototype.forEach.call(document.querySelectorAll("[class*='icon']"), function(e) {
             var cls = e.className;
             cls = cls.replace("-check", "-check-square-o").replace("-info-sign", "-info-circle")
