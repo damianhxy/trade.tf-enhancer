@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.1.1
+// @version             1.2.1.2
 // ==/UserScript==
 
 (function () {
@@ -176,7 +176,7 @@
             document.querySelector(".btn-reload").parentNode.appendChild(data);
             document.querySelector(".clear-top").firstElementChild.style.clear = "both";
             document.querySelector(".btn-reload").firstElementChild.classList.add("fa-spin");
-            setInterval(showStatus, 1000);
+            setInterval(showStatus, 1e3);
         }
         console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
     } catch(e) {
