@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.1.0
+// @version             1.2.1.1
 // ==/UserScript==
 
 (function () {
@@ -61,10 +61,9 @@
     function showStatus() {
         if (reloadTime) {
             var min = Math.floor(reloadTime / 60),
-                sec = reloadTime % 60;
+                sec = reloadTime-- % 60;
             document.title = "Trade.tf: " + min + ":" + ("0" + sec).slice(-2);
             data.textContent = " Reloading in: " + min + ":" + ("0" + sec).slice(-2);
-            reloadTime--;
         } else {
             location.reload(true);
             clearInterval(showStatus);
