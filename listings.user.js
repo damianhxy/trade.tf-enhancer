@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.1.5
+// @version             1.2.1.6
 // ==/UserScript==
 
 (function () {
@@ -94,7 +94,7 @@
             sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
             input.appendChild(document.createTextNode(sessionStorage.getItem("minProfit")));
             input.className = "btn btn-info btn-sm";
-            input.style = "width: 50px; margin-right: 5px; height: 21px;";
+            input.style = "width: 50px; margin-right: 5px; height: 21px; overflow: scroll;";
             input.contentEditable = "true";
             style.appendChild(document.createTextNode("[contenteditable] br { display: none; }"));
             document.head.appendChild(style);
@@ -109,7 +109,11 @@
             addButton("alert", "Alert", false);
             addButton("paused", "Paused", false);
             box.appendChild(input);
-            input.addEventListener("input", function() {
+            input.addEventListener("keydown", function(e) {
+                if ((e.which !== 8 && e.which !== 46) && (e.which === 13 || e.which < 47 || e.which > 57))
+                    e.preventDefault();
+            });
+            input.addEventListener("keyup", function(e) {
                 if (isFinite(this.textContent) && this.textContent) {
                     sessionStorage.setItem("minProfit", +this.textContent);
                     if (!JSON.parse(sessionStorage.getItem("paused"))) {
