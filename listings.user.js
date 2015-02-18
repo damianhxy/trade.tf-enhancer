@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.1.4
+// @version             1.2.1.5
 // ==/UserScript==
 
 (function () {
@@ -24,7 +24,7 @@
         var button = document.createElement("a"),
             activated = JSON.parse(sessionStorage.getItem(prop));
         button.style = "margin-right: 5px; width: 100px;";
-        button.className = "btn btn-" + (activated ? "success" : "danger") + " btn-sm pull-right";
+        button.className = "btn btn-" + (activated ? "success" : "danger") + " btn-sm";
         button.addEventListener("click", function() {
             window.stop();
             sessionStorage.setItem(prop, !JSON.parse(sessionStorage.getItem(prop)));
@@ -32,7 +32,7 @@
         });
         button.appendChild(createIcon("toggle-" + (activated ? "on" : "off"), "border: none;"));
         button.appendChild(document.createTextNode(val));
-        document.querySelector("div[style^='width: 100%;']").appendChild(button);
+        document.querySelector("#wrap > div:nth-child(4)").appendChild(button);
     }
 
     function check(element, toggle, query, content) {
@@ -88,23 +88,27 @@
 
         if (listingsPage) {
             var input = document.createElement("a"),
-                style = document.createElement("style");
+                style = document.createElement("style"),
+                box = document.createElement("div"),
+                wrap = document.getElementById("wrap");
             sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
             input.appendChild(document.createTextNode(sessionStorage.getItem("minProfit")));
-            input.className = "btn btn-info btn-sm pull-right";
+            input.className = "btn btn-info btn-sm";
             input.style = "width: 50px; margin-right: 5px; height: 21px;";
             input.contentEditable = "true";
             style.appendChild(document.createTextNode("[contenteditable] br { display: none; }"));
             document.head.appendChild(style);
-            document.querySelector("div[style^='width: 100%']").appendChild(input);
-            addButton("paused", "Paused", false);
-            addButton("alert", "Alert", false);
-            addButton("unusuals", "Unusuals", false);
-            addButton("gifted", "Gifted", true);
-            addButton("parted", "Parted", true);
-            addButton("painted", "Painted", true);
-            addButton("killstreak", "Killstreak", true);
+            box.style = "margin: auto; display: table;";
+            wrap.insertBefore(box, wrap.children[3]);
             addButton("caution", "Caution", true);
+            addButton("killstreak", "Killstreak", true);
+            addButton("painted", "Painted", true);
+            addButton("parted", "Parted", true);
+            addButton("gifted", "Gifted", true);
+            addButton("unusuals", "Unusuals", false);
+            addButton("alert", "Alert", false);
+            addButton("paused", "Paused", false);
+            box.appendChild(input);
             input.addEventListener("input", function() {
                 if (isFinite(this.textContent) && this.textContent) {
                     sessionStorage.setItem("minProfit", +this.textContent);
@@ -122,6 +126,9 @@
                         });
                     }
                 }
+            });
+            input.addEventListener("blur", function() {
+                this.textContent = sessionStorage.getItem("minProfit");
             });
             if (JSON.parse(sessionStorage.getItem("paused"))) {
                 document.title = "Trade.tf: Paused";
@@ -151,19 +158,18 @@
                         sessionStorage.setItem("latest", trade);
                         vis.lastElementChild.style.backgroundColor = "lime";
                         Notification.requestPermission(function(permission) {
-                            var header = "Trade.tf Enhancer",
-                                amt = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/),
+                            var amt = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/),
                                 loc = vis.querySelector("[href^='/r/trade']").childNodes[2].textContent,
                                 comp = vis.querySelector("div.trade-profit").getAttribute("data-original-title")
                                                                             .split("</u> "),
                                 msg = amt + "%" + loc + "\n[V] " + comp[1].split("<br/>")[0] + " [W] " + comp[2];
                             if (permission === "granted") {
-                                var modal = new Notification(header, {
+                                var modal = new Notification("Trade.tf Enhancer", {
                                     body: msg,
                                     icon: alertIcon
                                 });
                                 modal.addEventListener("click", function() {
-                                    alert();
+                                    alert(msg);
                                 });
                             }
                             else
