@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.1.3
+// @version             1.2.1.4
 // ==/UserScript==
 
 (function () {
@@ -87,10 +87,15 @@
         });
 
         if (listingsPage) {
-            var input = document.createElement("input");
+            var input = document.createElement("a"),
+                style = document.createElement("style");
             sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
-            input.setAttribute("value", sessionStorage.getItem("minProfit"));
-            input.style = "float: right; width: 50px; margin-right: 5px; text-align: center;";
+            input.appendChild(document.createTextNode(sessionStorage.getItem("minProfit")));
+            input.className = "btn btn-info btn-sm pull-right";
+            input.style = "width: 50px; margin-right: 5px; height: 21px;";
+            input.contentEditable = "true";
+            style.appendChild(document.createTextNode("[contenteditable] br { display: none; }"));
+            document.head.appendChild(style);
             document.querySelector("div[style^='width: 100%']").appendChild(input);
             addButton("paused", "Paused", false);
             addButton("alert", "Alert", false);
@@ -100,9 +105,9 @@
             addButton("painted", "Painted", true);
             addButton("killstreak", "Killstreak", true);
             addButton("caution", "Caution", true);
-            input.addEventListener("keyup", function() {
-                if (isFinite(this.value) && this.value) {
-                    sessionStorage.setItem("minProfit", this.value);
+            input.addEventListener("input", function() {
+                if (isFinite(this.textContent) && this.textContent) {
+                    sessionStorage.setItem("minProfit", +this.textContent);
                     if (!JSON.parse(sessionStorage.getItem("paused"))) {
                         Array.prototype.forEach.call(document.getElementsByClassName("trade"), function(e) {
                             var profit = e.querySelector("span.trade-profit").textContent;
@@ -138,7 +143,6 @@
                     e.setAttribute("data-hidden", null);
                 }
             });
-
             if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
                 var vis = document.querySelector(".trade:not([data-hidden]):not([data-noprofit])");
                 if (vis) {
@@ -168,7 +172,6 @@
                     }
                 }
             }
-
             var reloadTime = randomTime ? range(randomMin, randomMax) : defaultTime,
                 data = document.createElement("small");
             data.style = "color: orange;";
