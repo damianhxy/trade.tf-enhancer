@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.1.2
+// @version             1.2.1.3
 // ==/UserScript==
 
 (function () {
@@ -22,7 +22,6 @@
     function addButton(prop, val, def) {
         sessionStorage.setItem(prop, sessionStorage.getItem(prop) || def);
         var button = document.createElement("a"),
-            text = document.createTextNode(" " + val),
             activated = JSON.parse(sessionStorage.getItem(prop));
         button.style = "margin-right: 5px; width: 100px;";
         button.className = "btn btn-" + (activated ? "success" : "danger") + " btn-sm pull-right";
@@ -32,7 +31,7 @@
             location.reload();
         });
         button.appendChild(createIcon("toggle-" + (activated ? "on" : "off"), "border: none;"));
-        button.appendChild(text);
+        button.appendChild(document.createTextNode(val));
         document.querySelector("div[style^='width: 100%;']").appendChild(button);
     }
 
@@ -109,7 +108,7 @@
                             var profit = e.querySelector("span.trade-profit").textContent;
                             if (+profit.match(/-?(?:\d+\.)?\d+?/) < +sessionStorage.getItem("minProfit")) {
                                 e.style.display = "none";
-                                e.setAttribute("data-noprofit", "");
+                                e.setAttribute("data-noprofit", null);
                             }
                             else if (!e.hasAttribute("data-hidden")) {
                                 e.style.display = "";
@@ -127,7 +126,7 @@
                 var profit = e.querySelector("span.trade-profit").textContent;
                 if (+profit.match(/-?(?:\d+\.)?\d+?/) < +sessionStorage.getItem("minProfit")) {
                     e.style.display = "none";
-                    e.setAttribute("data-noprofit", "");
+                    e.setAttribute("data-noprofit", null);
                 }
                 else if (check(e, "caution", "label-warning", "Caution") ||
                          check(e, "killstreak", "label-success", "Killstreak") ||
@@ -136,7 +135,7 @@
                          check(e, "gifted", "label-important", "Gifted") ||
                          check(e, "unusuals", "q-unusual")) {
                     e.style.display = "none";
-                    e.setAttribute("data-hidden", "");
+                    e.setAttribute("data-hidden", null);
                 }
             });
 
@@ -149,18 +148,18 @@
                         vis.lastElementChild.style.backgroundColor = "lime";
                         Notification.requestPermission(function(permission) {
                             var header = "Trade.tf Enhancer",
-                                amt = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/) + "%",
+                                amt = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/),
                                 loc = vis.querySelector("[href^='/r/trade']").childNodes[2].textContent,
                                 comp = vis.querySelector("div.trade-profit").getAttribute("data-original-title")
                                                                             .split("</u> "),
-                                msg = amt + loc + "\n[V] " + comp[1].split("<br/>")[0] + " [W] " + comp[2];
+                                msg = amt + "%" + loc + "\n[V] " + comp[1].split("<br/>")[0] + " [W] " + comp[2];
                             if (permission === "granted") {
                                 var modal = new Notification(header, {
                                     body: msg,
                                     icon: alertIcon
                                 });
                                 modal.addEventListener("click", function() {
-                                    alert("Go Go Go!");
+                                    alert();
                                 });
                             }
                             else
@@ -176,7 +175,7 @@
             document.querySelector(".btn-reload").parentNode.appendChild(data);
             document.querySelector(".clear-top").firstElementChild.style.clear = "both";
             document.querySelector(".btn-reload").firstElementChild.classList.add("fa-spin");
-            setInterval(showStatus, 1e3);
+            setInterval(showStatus, 1000);
         }
         console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
     } catch(e) {
