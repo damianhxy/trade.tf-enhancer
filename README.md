@@ -7,4 +7,4 @@ This script provides options on [trade.tf](http://trade.tf)'s all listings page,
 
 More information is available in the wiki.
 
-Track its development here: [Trello](https://trello.com/b/txEgdznu/bazaar-tf-enhancer)
+Track its development here: [Trello](https://trello.com/b/birdRc14/trade-tf-enhancer)
