@@ -8,15 +8,12 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.1.7
+// @version             1.2.1.8
 // ==/UserScript==
 
 (function () {
     /*********** SETTINGS ***********/
-    var randomTime = 0,              //[boolean] random reload time?
-        defaultTime = 15,            //[seconds] default reload time
-        randomMin = 10,              //[seconds] minimum random reload time
-        randomMax = 20;              //[seconds] maximum random reload time
+    var reloadTime = 15;            //[seconds] default reload time
     /******** END OF SETTINGS *******/
 
     function addButton(prop, val, def) {
@@ -180,8 +177,7 @@
                     }
                 }
             }
-            var reloadTime = randomTime ? range(randomMin, randomMax) : defaultTime,
-                data = document.createElement("small");
+            var data = document.createElement("small");
             data.style = "color: orange;";
             document.querySelector(".btn-reload").parentNode.appendChild(data);
             document.querySelector(".clear-top").firstElementChild.style.clear = "both";
