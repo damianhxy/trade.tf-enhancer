@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.1.6
+// @version             1.2.1.7
 // ==/UserScript==
 
 (function () {
@@ -109,11 +109,9 @@
             addButton("alert", "Alert", false);
             addButton("paused", "Paused", false);
             box.appendChild(input);
-            input.addEventListener("keydown", function(e) {
-                if ((e.which !== 8 && e.which !== 46) && (e.which === 13 || e.which < 47 || e.which > 57))
-                    e.preventDefault();
-            });
             input.addEventListener("keyup", function(e) {
+                if (e.which === 13 || e.which === 27)
+                    input.blur();
                 if (isFinite(this.textContent) && this.textContent) {
                     sessionStorage.setItem("minProfit", +this.textContent);
                     if (!JSON.parse(sessionStorage.getItem("paused"))) {
