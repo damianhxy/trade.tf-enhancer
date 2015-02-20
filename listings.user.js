@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.1.8
+// @version             1.2.1.9
 // ==/UserScript==
 
 (function () {
@@ -22,7 +22,7 @@
             activated = JSON.parse(sessionStorage.getItem(prop));
         button.style = "margin-right: 5px; width: 100px;";
         button.className = "btn btn-" + (activated ? "success" : "danger") + " btn-sm";
-        button.addEventListener("click", function() {
+        button.addEventListener("click", () => {
             window.stop();
             sessionStorage.setItem(prop, !JSON.parse(sessionStorage.getItem(prop)));
             location.reload();
@@ -68,19 +68,16 @@
 
     try {
         /******** SCRIPT GLOBALS ********/
-        var listingsPage = /^http:\/\/www\.trade\.tf\/listings\/\d+$/.test(document.URL),
-            alertIcon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/e6/" +
-                        "e6ff6859b1c96e923a5051d54ee1f6e35c45094b_full.jpg";
+        var listingsPage = /^http:\/\/www\.trade\.tf\/listings\/\d+$/.test(document.URL);
         /****** END SCRIPT GLOBALS ******/
 
         var style = document.querySelector("[href*='font-awesome']");
         style.href = style.href.replace("3.2.1", "4.3.0");
-        Array.prototype.forEach.call(document.querySelectorAll("[class*='icon']"), function(e) {
-            var cls = e.className;
-            cls = cls.replace("-check", "-check-square-o").replace("-info-sign", "-info-circle")
-                     .replace("-ok-circle", "-check-circle-o").replace("-time", "-clock-o")
-                     .replace("-white", "-inverse");
-            e.className = "fa " + cls.replace(/icon/g, "fa");
+        Array.prototype.forEach.call(document.querySelectorAll("[class*='icon']"), e => {
+            var cls = "fa " + e.className;
+            e.className = cls.replace("-check", "-check-square-o").replace("-info-sign", "-info-circle")
+                             .replace("-ok-circle", "-check-circle-o").replace("-time", "-clock-o")
+                             .replace("-white", "-inverse").replace(/icon/g, "fa");
         });
 
         if (listingsPage) {
@@ -106,15 +103,15 @@
             addButton("alert", "Alert", false);
             addButton("paused", "Paused", false);
             box.appendChild(input);
-            input.addEventListener("keyup", function(e) {
+            input.addEventListener("keyup", e => {
                 if (e.which === 13 || e.which === 27)
                     input.blur();
                 if (isFinite(this.textContent) && this.textContent) {
                     sessionStorage.setItem("minProfit", +this.textContent);
                     if (!JSON.parse(sessionStorage.getItem("paused"))) {
-                        Array.prototype.forEach.call(document.getElementsByClassName("trade"), function(e) {
-                            var profit = e.querySelector("span.trade-profit").textContent;
-                            if (+profit.match(/-?(?:\d+\.)?\d+?/) < +sessionStorage.getItem("minProfit")) {
+                        Array.prototype.forEach.call(document.getElementsByClassName("trade"), e => {
+                            if (+e.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/) <
+                                +sessionStorage.getItem("minProfit")) {
                                 e.style.display = "none";
                                 e.setAttribute("data-noprofit", null);
                             }
@@ -126,25 +123,25 @@
                     }
                 }
             });
-            input.addEventListener("blur", function() {
+            input.addEventListener("blur", () => {
                 this.textContent = sessionStorage.getItem("minProfit");
             });
             if (JSON.parse(sessionStorage.getItem("paused"))) {
                 document.title = "Trade.tf: Paused";
                 return console.info("Trade.tf Script Paused. Version " + GM_info.script.version);
             }
-            Array.prototype.forEach.call(document.getElementsByClassName("trade"), function(e) {
-                var profit = e.querySelector("span.trade-profit").textContent;
-                if (+profit.match(/-?(?:\d+\.)?\d+?/) < +sessionStorage.getItem("minProfit")) {
+            Array.prototype.forEach.call(document.getElementsByClassName("trade"), e => {
+                if (+e.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/) <
+                    +sessionStorage.getItem("minProfit")) {
                     e.style.display = "none";
                     e.setAttribute("data-noprofit", null);
                 }
-                else if (check(e, "caution", "label-warning", "Caution") ||
-                         check(e, "killstreak", "label-success", "Killstreak") ||
-                         check(e, "painted", "paint1") ||
-                         check(e, "parted", "label-success", "Strange Parts") ||
-                         check(e, "gifted", "label-important", "Gifted") ||
-                         check(e, "unusuals", "q-unusual")) {
+                else if ([["caution", "label-warning", "Caution"],
+                          ["killstreak", "label-success", "Killstreak"],
+                          ["painted", "paint1"],
+                          ["parted", "label-success", "Strange Parts"],
+                          ["gifted", "label-important", "Gifted"],
+                          ["unusuals", "q-unusual"]].some(predicate => check(e, ...predicate))) {
                     e.style.display = "none";
                     e.setAttribute("data-hidden", null);
                 }
@@ -156,7 +153,7 @@
                     if (sessionStorage.getItem("latest") !== trade) {
                         sessionStorage.setItem("latest", trade);
                         vis.lastElementChild.style.backgroundColor = "lime";
-                        Notification.requestPermission(function(permission) {
+                        Notification.requestPermission(permission => {
                             var amt = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/),
                                 loc = vis.querySelector("[href^='/r/trade']").childNodes[2].textContent,
                                 comp = vis.querySelector("div.trade-profit").getAttribute("data-original-title")
@@ -165,9 +162,10 @@
                             if (permission === "granted") {
                                 var modal = new Notification("Trade.tf Enhancer", {
                                     body: msg,
-                                    icon: alertIcon
+                                    icon: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/e6/" +
+                                          "e6ff6859b1c96e923a5051d54ee1f6e35c45094b_full.jpg"
                                 });
-                                modal.addEventListener("click", function() {
+                                modal.addEventListener("click", () => {
                                     alert(msg);
                                 });
                             }
@@ -178,7 +176,7 @@
                 }
             }
             var data = document.createElement("small");
-            data.style = "color: orange;";
+            data.style.color = "orange";
             document.querySelector(".btn-reload").parentNode.appendChild(data);
             document.querySelector(".clear-top").firstElementChild.style.clear = "both";
             document.querySelector(".btn-reload").firstElementChild.classList.add("fa-spin");
