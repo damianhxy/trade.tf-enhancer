@@ -107,8 +107,7 @@
              ["-ok-circle", "-check-circle-o"],
              ["-time", "-clock-o"],
              ["-white", "-inverse"],
-             [/icon/g, "fa"]
-            ].forEach(f => e.className = e.className.replace(...f));
+             [/icon/g, "fa"]].forEach(f => e.className = e.className.replace(...f));
         });
 
         if (listingsPage) {
