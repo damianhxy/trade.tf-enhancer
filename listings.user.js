@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.2.0
+// @version             1.2.2.1
 // ==/UserScript==
 
 (function () {
@@ -71,8 +71,7 @@
                  ["painted", "paint1"],
                  ["parted", "label-success", "Strange Parts"],
                  ["gifted", "label-important", "Gifted"],
-                 ["unusuals", "q-unusual"]
-                ].some(predicate => check(e, ...predicate)))
+                 ["unusuals", "q-unusual"]].some(predicate => check(e, ...predicate)))
                 e.style.display = "none";
             else
                 e.style.display = "";
@@ -133,8 +132,7 @@
              ["gifted", "Gifted", true],
              ["unusuals", "Unusuals", false],
              ["alert", "Alert", false],
-             ["paused", "Paused", false]
-            ].forEach(e => addButton(...e));
+             ["paused", "Paused", false]].forEach(e => addButton(...e));
             box.appendChild(input);
             input.addEventListener("keyup", e => {
                 if (e.which === 13 || e.which === 27)
