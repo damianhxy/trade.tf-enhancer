@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.2.4
+// @version             1.2.2.5
 // ==/UserScript==
 
 (function () {
@@ -21,19 +21,17 @@
         var button = document.createElement("a"),
             activated = JSON.parse(sessionStorage.getItem(prop));
         button.style = "margin-right: 5px; width: 100px;";
-        button.className = "btn btn-" + (activated ? "success" : "danger") + " btn-sm";
+        button.classList.add("btn", "btn-" + (activated ? "success" : "danger"), "btn-sm");
         button.addEventListener("click", () => {
-            var stat = !JSON.parse(sessionStorage.getItem(prop)),
-                btn = ["danger", "success"],
-                tog = ["off", "on"];
-            if (!stat)
-                [btn, tog].forEach(e => e.push(e.shift()));
+            var stat = !JSON.parse(sessionStorage.getItem(prop));
             sessionStorage.setItem(prop, stat);
             if (prop === "paused" || prop === "alert")
                 location.reload();
             else {
-                button.className = button.className.replace(...btn);
-                button.firstElementChild.className = button.firstElementChild.className.replace(...tog);
+                button.classList.toggle("btn-danger", !stat);
+                button.classList.toggle("btn-success", stat);
+                button.firstElementChild.classList.toggle("fa-toggle-off", !stat);
+                button.firstElementChild.classList.toggle("fa-toggle-on", stat);
                 filter();
             }
         });
@@ -53,8 +51,8 @@
 
     function createIcon(cls, style, content) {
         var icon = document.createElement("i");
-        icon.className = "fa fa-" + cls + " fa-inverse fa-border pull-left";
-        icon.style = style;
+        icon.classList.add("fa", "fa-" + cls, "fa-inverse", "fa-border", "pull-left");
+        icon.style = "border-radius: 50%;" + (style ? " " + style : "");
         if (content)
             icon.appendChild(document.createTextNode(content));
         return icon;
@@ -99,7 +97,7 @@
         var style = document.querySelector("[href*='font-awesome']");
         style.href = style.href.replace("3.2.1", "4.3.0");
         Array.prototype.forEach.call(document.querySelectorAll("[class*='icon']"), e => {
-            e.className = "fa " + e.className;
+            e.classList.add("fa");
             [["-check", "-check-square-o"],
              ["-info-sign", "-info-circle"],
              ["-ok-circle", "-check-circle-o"],
@@ -117,7 +115,7 @@
             document.head.appendChild(style);
             sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
             input.appendChild(document.createTextNode(sessionStorage.getItem("minProfit")));
-            input.className = "btn btn-info btn-sm";
+            input.classList.add("btn", "btn-info", "btn-sm");
             input.style = "width: 50px; margin-right: 5px; height: 21px; overflow: scroll;";
             input.contentEditable = "true";
             box.style = "margin: auto; display: table;";
@@ -181,7 +179,8 @@
             data.style.color = "orange";
             document.querySelector(".btn-reload").parentNode.appendChild(data);
             document.querySelector(".clear-top").firstElementChild.style.clear = "both";
-            refresh.className = refresh.className.replace("refresh", "spinner fa-spin");
+            refresh.classList.remove("fa-refresh");
+            refresh.classList.add("fa-spinner", "fa-spin");
             setInterval(showStatus, 1000);
         }
         console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
