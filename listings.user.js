@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.2.1
+// @version             1.2.2.2
 // ==/UserScript==
 
 (function () {
@@ -31,7 +31,7 @@
                 tog.push(tog.shift());
             }
             sessionStorage.setItem(prop, stat);
-            if (prop === "paused")
+            if (prop === "paused" || prop === "alert")
                 location.reload();
             else {
                 button.className = button.className.replace(...btn);
@@ -151,7 +151,7 @@
             }
             filter();
             if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
-                var vis = document.querySelector(".trade:not([data-hidden]):not([data-noprofit])");
+                var vis = document.querySelector(".trade:not([style*='display: none'])");
                 if (vis) {
                     var trade = vis.querySelector("a").href.slice(28, 37);
                     if (sessionStorage.getItem("latest") !== trade) {
