@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.2.3
+// @version             1.2.2.4
 // ==/UserScript==
 
 (function () {
@@ -159,8 +159,8 @@
                             var amt = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/),
                                 loc = vis.querySelector("[href^='/r/trade']").childNodes[2].textContent,
                                 comp = vis.querySelector("div.trade-profit").getAttribute("data-original-title")
-                                                                            .split("</u> "),
-                                msg = amt + "%" + loc + "\n[V] " + comp[1].split("<br/>")[0] + " [W] " + comp[2];
+                                                                            .split(/(?:<br\/>|<\/u>)/),
+                                msg = (amt || 0) + "%" + loc + "\n[V]" + comp[1] + " [W]" + comp[3];
                             if (permission === "granted") {
                                 var modal = new Notification("Trade.tf Enhancer", {
                                     body: msg,
