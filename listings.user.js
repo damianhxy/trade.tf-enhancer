@@ -8,12 +8,12 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.1.9
+// @version             1.2.2.0
 // ==/UserScript==
 
 (function () {
     /*********** SETTINGS ***********/
-    var reloadTime = 15;            //[seconds] default reload time
+    var reloadTime = 15;             //[seconds] default reload time
     /******** END OF SETTINGS *******/
 
     function addButton(prop, val, def) {
@@ -23,9 +23,21 @@
         button.style = "margin-right: 5px; width: 100px;";
         button.className = "btn btn-" + (activated ? "success" : "danger") + " btn-sm";
         button.addEventListener("click", () => {
-            window.stop();
-            sessionStorage.setItem(prop, !JSON.parse(sessionStorage.getItem(prop)));
-            location.reload();
+            var stat = !JSON.parse(sessionStorage.getItem(prop)),
+                btn = ["danger", "success"],
+                tog = ["off", "on"];
+            if (!stat) {
+                btn.push(btn.shift());
+                tog.push(tog.shift());
+            }
+            sessionStorage.setItem(prop, stat);
+            if (prop === "paused")
+                location.reload();
+            else {
+                button.className = button.className.replace(...btn);
+                button.firstElementChild.className = button.firstElementChild.className.replace(...tog);
+                filter();
+            }
         });
         button.appendChild(createIcon("toggle-" + (activated ? "on" : "off"), "border: none;"));
         button.appendChild(document.createTextNode(val));
@@ -50,8 +62,21 @@
         return icon;
     }
 
-    function range(lo, hi) {
-        return Math.floor(Math.random() * (hi - lo + 1)) + lo;
+    function filter() {
+        Array.prototype.forEach.call(document.getElementsByClassName("trade"), e => {
+            var profit = +e.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/);
+            if (profit < +sessionStorage.getItem("minProfit") ||
+                [["caution", "label-warning", "Caution"],
+                 ["killstreak", "label-success", "Killstreak"],
+                 ["painted", "paint1"],
+                 ["parted", "label-success", "Strange Parts"],
+                 ["gifted", "label-important", "Gifted"],
+                 ["unusuals", "q-unusual"]
+                ].some(predicate => check(e, ...predicate)))
+                e.style.display = "none";
+            else
+                e.style.display = "";
+        });
     }
 
     function showStatus() {
@@ -68,16 +93,23 @@
 
     try {
         /******** SCRIPT GLOBALS ********/
-        var listingsPage = /^http:\/\/www\.trade\.tf\/listings\/\d+$/.test(document.URL);
+        var listingsPage = /^http:\/\/www\.trade\.tf\/listings\/\d+$/.test(document.URL),
+            alertIcon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/e6/" +
+                        "e6ff6859b1c96e923a5051d54ee1f6e35c45094b_full.jpg",
+            alertSound = "https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav";
         /****** END SCRIPT GLOBALS ******/
 
         var style = document.querySelector("[href*='font-awesome']");
         style.href = style.href.replace("3.2.1", "4.3.0");
         Array.prototype.forEach.call(document.querySelectorAll("[class*='icon']"), e => {
-            var cls = "fa " + e.className;
-            e.className = cls.replace("-check", "-check-square-o").replace("-info-sign", "-info-circle")
-                             .replace("-ok-circle", "-check-circle-o").replace("-time", "-clock-o")
-                             .replace("-white", "-inverse").replace(/icon/g, "fa");
+            e.className = "fa " + e.className;
+            [["-check", "-check-square-o"],
+             ["-info-sign", "-info-circle"],
+             ["-ok-circle", "-check-circle-o"],
+             ["-time", "-clock-o"],
+             ["-white", "-inverse"],
+             [/icon/g, "fa"]
+            ].forEach(f => e.className = e.className.replace(...f));
         });
 
         if (listingsPage) {
@@ -85,67 +117,42 @@
                 style = document.createElement("style"),
                 box = document.createElement("div"),
                 wrap = document.getElementById("wrap");
+            style.appendChild(document.createTextNode("[contenteditable] br { display: none; }"));
+            document.head.appendChild(style);
             sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
             input.appendChild(document.createTextNode(sessionStorage.getItem("minProfit")));
             input.className = "btn btn-info btn-sm";
             input.style = "width: 50px; margin-right: 5px; height: 21px; overflow: scroll;";
             input.contentEditable = "true";
-            style.appendChild(document.createTextNode("[contenteditable] br { display: none; }"));
-            document.head.appendChild(style);
             box.style = "margin: auto; display: table;";
             wrap.insertBefore(box, wrap.children[3]);
-            addButton("caution", "Caution", true);
-            addButton("killstreak", "Killstreak", true);
-            addButton("painted", "Painted", true);
-            addButton("parted", "Parted", true);
-            addButton("gifted", "Gifted", true);
-            addButton("unusuals", "Unusuals", false);
-            addButton("alert", "Alert", false);
-            addButton("paused", "Paused", false);
+            [["caution", "Caution", true],
+             ["killstreak", "Killstreak", true],
+             ["painted", "Painted", true],
+             ["parted", "Parted", true],
+             ["gifted", "Gifted", true],
+             ["unusuals", "Unusuals", false],
+             ["alert", "Alert", false],
+             ["paused", "Paused", false]
+            ].forEach(e => addButton(...e));
             box.appendChild(input);
             input.addEventListener("keyup", e => {
                 if (e.which === 13 || e.which === 27)
                     input.blur();
-                if (isFinite(this.textContent) && this.textContent) {
-                    sessionStorage.setItem("minProfit", +this.textContent);
-                    if (!JSON.parse(sessionStorage.getItem("paused"))) {
-                        Array.prototype.forEach.call(document.getElementsByClassName("trade"), e => {
-                            if (+e.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/) <
-                                +sessionStorage.getItem("minProfit")) {
-                                e.style.display = "none";
-                                e.setAttribute("data-noprofit", null);
-                            }
-                            else if (!e.hasAttribute("data-hidden")) {
-                                e.style.display = "";
-                                e.removeAttribute("data-noprofit");
-                            }
-                        });
-                    }
+                if (isFinite(input.textContent) && input.textContent) {
+                    sessionStorage.setItem("minProfit", +input.textContent);
+                    if (!JSON.parse(sessionStorage.getItem("paused")))
+                        filter();
                 }
             });
             input.addEventListener("blur", () => {
-                this.textContent = sessionStorage.getItem("minProfit");
+                input.textContent = sessionStorage.getItem("minProfit");
             });
             if (JSON.parse(sessionStorage.getItem("paused"))) {
                 document.title = "Trade.tf: Paused";
                 return console.info("Trade.tf Script Paused. Version " + GM_info.script.version);
             }
-            Array.prototype.forEach.call(document.getElementsByClassName("trade"), e => {
-                if (+e.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/) <
-                    +sessionStorage.getItem("minProfit")) {
-                    e.style.display = "none";
-                    e.setAttribute("data-noprofit", null);
-                }
-                else if ([["caution", "label-warning", "Caution"],
-                          ["killstreak", "label-success", "Killstreak"],
-                          ["painted", "paint1"],
-                          ["parted", "label-success", "Strange Parts"],
-                          ["gifted", "label-important", "Gifted"],
-                          ["unusuals", "q-unusual"]].some(predicate => check(e, ...predicate))) {
-                    e.style.display = "none";
-                    e.setAttribute("data-hidden", null);
-                }
-            });
+            filter();
             if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
                 var vis = document.querySelector(".trade:not([data-hidden]):not([data-noprofit])");
                 if (vis) {
@@ -162,24 +169,24 @@
                             if (permission === "granted") {
                                 var modal = new Notification("Trade.tf Enhancer", {
                                     body: msg,
-                                    icon: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/e6/" +
-                                          "e6ff6859b1c96e923a5051d54ee1f6e35c45094b_full.jpg"
+                                    icon: alertIcon
                                 });
                                 modal.addEventListener("click", () => {
                                     alert(msg);
                                 });
                             }
                             else
-                                new Audio("https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav").play();
+                                new Audio(alertSound).play();
                         });
                     }
                 }
             }
-            var data = document.createElement("small");
+            var data = document.createElement("small"),
+                refresh = document.querySelector(".btn-reload").firstElementChild;
             data.style.color = "orange";
             document.querySelector(".btn-reload").parentNode.appendChild(data);
             document.querySelector(".clear-top").firstElementChild.style.clear = "both";
-            document.querySelector(".btn-reload").firstElementChild.classList.add("fa-spin");
+            refresh.className = refresh.className.replace("refresh", "spinner fa-spin");
             setInterval(showStatus, 1000);
         }
         console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
