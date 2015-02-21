@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.2.2
+// @version             1.2.2.3
 // ==/UserScript==
 
 (function () {
@@ -26,10 +26,8 @@
             var stat = !JSON.parse(sessionStorage.getItem(prop)),
                 btn = ["danger", "success"],
                 tog = ["off", "on"];
-            if (!stat) {
-                btn.push(btn.shift());
-                tog.push(tog.shift());
-            }
+            if (!stat)
+                [btn, tog].forEach(e => e.push(e.shift()));
             sessionStorage.setItem(prop, stat);
             if (prop === "paused" || prop === "alert")
                 location.reload();
