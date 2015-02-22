@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.2.5
+// @version             1.2.2.6
 // ==/UserScript==
 
 (function () {
@@ -21,7 +21,7 @@
         var button = document.createElement("a"),
             activated = JSON.parse(sessionStorage.getItem(prop));
         button.style = "margin-right: 5px; width: 100px;";
-        button.classList.add("btn", "btn-" + (activated ? "success" : "danger"), "btn-sm");
+        button.classList.add("btn", `btn-${activated ? "success" : "danger"}`, "btn-sm");
         button.addEventListener("click", () => {
             var stat = !JSON.parse(sessionStorage.getItem(prop));
             sessionStorage.setItem(prop, stat);
@@ -35,14 +35,14 @@
                 filter();
             }
         });
-        button.appendChild(createIcon("toggle-" + (activated ? "on" : "off"), "border: none;"));
+        button.appendChild(createIcon(`toggle-${activated ? "on" : "off"}`, "border: none;"));
         button.appendChild(document.createTextNode(val));
         document.querySelector("#wrap > div:nth-child(4)").appendChild(button);
     }
 
     function check(element, toggle, query, content) {
         if (!JSON.parse(sessionStorage.getItem(toggle))) {
-            var ele = element.querySelector("." + query);
+            var ele = element.querySelector(`.${query}`);
             if (ele)
                 return content ? ele.textContent.contains(content) : true;
         }
@@ -51,8 +51,8 @@
 
     function createIcon(cls, style, content) {
         var icon = document.createElement("i");
-        icon.classList.add("fa", "fa-" + cls, "fa-inverse", "fa-border", "pull-left");
-        icon.style = "border-radius: 50%;" + (style ? " " + style : "");
+        icon.classList.add("fa", `fa-${cls}`, "fa-inverse", "fa-border", "pull-left");
+        icon.style = `border-radius: 50%;${style ? " " + style : ""}`;
         if (content)
             icon.appendChild(document.createTextNode(content));
         return icon;
@@ -78,8 +78,8 @@
         if (reloadTime) {
             var min = Math.floor(reloadTime / 60),
                 sec = reloadTime-- % 60;
-            document.title = "Trade.tf: " + min + ":" + ("0" + sec).slice(-2);
-            data.textContent = " Reloading in: " + min + ":" + ("0" + sec).slice(-2);
+            data.textContent = ` Reloading in: ${min}:${("0" + sec).slice(-2)}`;
+            document.title = `Trade.tf: ${min}:${("0" + sec).slice(-2)}`;
         } else {
             location.reload(true);
             clearInterval(showStatus);
@@ -111,7 +111,8 @@
                 style = document.createElement("style"),
                 box = document.createElement("div"),
                 wrap = document.getElementById("wrap");
-            style.appendChild(document.createTextNode("[contenteditable] br { display: none; }"));
+            style.appendChild(document.createTextNode("[contenteditable] br { display: none; }" +
+                                                      " * { -moz-user-select: none; }"));
             document.head.appendChild(style);
             sessionStorage.setItem("minProfit", sessionStorage.getItem("minProfit") || 5);
             input.appendChild(document.createTextNode(sessionStorage.getItem("minProfit")));
@@ -141,10 +142,8 @@
             input.addEventListener("blur", () => {
                 input.textContent = sessionStorage.getItem("minProfit");
             });
-            if (JSON.parse(sessionStorage.getItem("paused"))) {
-                document.title = "Trade.tf: Paused";
-                return console.info("Trade.tf Script Paused. Version " + GM_info.script.version);
-            }
+            if (JSON.parse(sessionStorage.getItem("paused")))
+                return console.info(`Trade.tf Script Paused. Version ${GM_info.script.version}`);
             filter();
             if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
                 var vis = document.querySelector(".trade:not([style*='display: none'])");
@@ -158,7 +157,7 @@
                                 loc = vis.querySelector("[href^='/r/trade']").childNodes[2].textContent,
                                 comp = vis.querySelector("div.trade-profit").getAttribute("data-original-title")
                                                                             .split(/(?:<br\/>|<\/u>)/),
-                                msg = (amt || 0) + "%" + loc + "\n[V]" + comp[1] + " [W]" + comp[3];
+                                msg = `${amt || 0}%${loc}\n[V]${comp[1]} [W]${comp[3]}`;
                             if (permission === "granted") {
                                 var modal = new Notification("Trade.tf Enhancer", {
                                     body: msg,
@@ -183,8 +182,8 @@
             refresh.classList.add("fa-spinner", "fa-spin");
             setInterval(showStatus, 1000);
         }
-        console.info("Trade.tf Script Loaded. Version " + GM_info.script.version);
+        console.info(`Trade.tf Script Loaded. Version ${GM_info.script.version}`);
     } catch(e) {
-        alert("[A fatal error has occured]\n" + e.message + "\n[Stack Trace]\n" + e.stack);
+        alert(`[A fatal error has occured]\n${e.message}\n[Stack Trace]\n${e.stack}`);
     }
 })();
