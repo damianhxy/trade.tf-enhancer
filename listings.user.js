@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.2.7
+// @version             1.2.2.8
 // ==/UserScript==
 
 (function () {
@@ -131,11 +131,10 @@
              ["paused", "Paused", false]].forEach(e => addButton(...e));
             box.appendChild(input);
             input.addEventListener("keyup", e => {
-                var value = parseFloat(input.textContent) || parseInt(input.textContent);
                 if (e.which === 13 || e.which === 27)
                     input.blur();
-                if (value) {
-                    sessionStorage.setItem("minProfit", value);
+                if (isFinite(input.textContent) && input.textContent.trim()) {
+                    sessionStorage.setItem("minProfit", +input.textContent);
                     if (!JSON.parse(sessionStorage.getItem("paused")))
                         filter();
                 }
