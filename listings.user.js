@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.2.8
+// @version             1.2.2.9
 // ==/UserScript==
 
 (function () {
@@ -72,6 +72,38 @@
             else
                 e.style.display = "";
         });
+        if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest"))
+            highlight();
+    }
+
+    function highlight() {
+        var vis = document.querySelector(".trade:not([style*='display: none'])"),
+            cur = document.querySelector(".trade-body[style*='background-color: lime']");
+        if (vis) {
+            var trade = vis.querySelector("[href]").href.slice(28, 37);
+            if (sessionStorage.getItem("latest") !== trade) {
+                sessionStorage.setItem("latest", trade);
+                if (cur)
+                    cur.style.backgroundColor = "";
+                vis.lastElementChild.style.backgroundColor = "lime";
+                Notification.requestPermission(permission => {
+                    var amt = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/),
+                        loc = vis.querySelector("[href^='/r/trade']").childNodes[2].textContent,
+                        comp = vis.querySelector("div.trade-profit").getAttribute("data-original-title")
+                                                                    .split(/(?:<br\/>|<\/u>)/),
+                        msg = `${amt || 0}%${loc}\n[Value]${comp[1]} [Wants]${comp[3]}`;
+                    if (permission === "granted") {
+                        var modal = new Notification("Trade.tf Enhancer", {
+                            body: msg,
+                            icon: alertIcon
+                        });
+                        modal.addEventListener("click", () => alert(msg));
+                    }
+                    else
+                        new Audio(alertSound).play();
+                });
+            }
+        }
     }
 
     function showStatus() {
@@ -145,34 +177,6 @@
             if (JSON.parse(sessionStorage.getItem("paused")))
                 return console.info(`Trade.tf Script Paused. Version ${GM_info.script.version}`);
             filter();
-            if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest")) {
-                var vis = document.querySelector(".trade:not([style*='display: none'])");
-                if (vis) {
-                    var trade = vis.querySelector("a").href.slice(28, 37);
-                    if (sessionStorage.getItem("latest") !== trade) {
-                        sessionStorage.setItem("latest", trade);
-                        vis.lastElementChild.style.backgroundColor = "lime";
-                        Notification.requestPermission(permission => {
-                            var amt = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/),
-                                loc = vis.querySelector("[href^='/r/trade']").childNodes[2].textContent,
-                                comp = vis.querySelector("div.trade-profit").getAttribute("data-original-title")
-                                                                            .split(/(?:<br\/>|<\/u>)/),
-                                msg = `${amt || 0}%${loc}\n[V]${comp[1]} [W]${comp[3]}`;
-                            if (permission === "granted") {
-                                var modal = new Notification("Trade.tf Enhancer", {
-                                    body: msg,
-                                    icon: alertIcon
-                                });
-                                modal.addEventListener("click", () => {
-                                    alert(msg);
-                                });
-                            }
-                            else
-                                new Audio(alertSound).play();
-                        });
-                    }
-                }
-            }
             var data = document.createElement("small"),
                 refresh = document.querySelector(".btn-reload").firstElementChild;
             data.style.color = "orange";
