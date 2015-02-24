@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.2.9
+// @version             1.2.3.0
 // ==/UserScript==
 
 (function () {
@@ -25,7 +25,7 @@
         button.addEventListener("click", () => {
             var stat = !JSON.parse(sessionStorage.getItem(prop));
             sessionStorage.setItem(prop, stat);
-            if (prop === "paused" || prop === "alert")
+            if (prop === "paused")
                 location.reload();
             else {
                 button.classList.toggle("btn-danger", !stat);
@@ -72,19 +72,23 @@
             else
                 e.style.display = "";
         });
-        if (JSON.parse(sessionStorage.getItem("alert")) || sessionStorage.removeItem("latest"))
+        if (JSON.parse(sessionStorage.getItem("alert")))
             highlight();
+        else {
+            sessionStorage.removeItem("latest");
+            if (modal)
+                modal.close();
+            removeHighlight();
+        }
     }
 
     function highlight() {
-        var vis = document.querySelector(".trade:not([style*='display: none'])"),
-            cur = document.querySelector(".trade-body[style*='background-color: lime']");
+        var vis = document.querySelector(".trade:not([style*='display: none'])");
         if (vis) {
             var trade = vis.querySelector("[href]").href.slice(28, 37);
             if (sessionStorage.getItem("latest") !== trade) {
                 sessionStorage.setItem("latest", trade);
-                if (cur)
-                    cur.style.backgroundColor = "";
+                removeHighlight();
                 vis.lastElementChild.style.backgroundColor = "lime";
                 Notification.requestPermission(permission => {
                     var amt = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/),
@@ -93,7 +97,7 @@
                                                                     .split(/(?:<br\/>|<\/u>)/),
                         msg = `${amt || 0}%${loc}\n[Value]${comp[1]} [Wants]${comp[3]}`;
                     if (permission === "granted") {
-                        var modal = new Notification("Trade.tf Enhancer", {
+                        modal = new Notification("Trade.tf Enhancer", {
                             body: msg,
                             icon: alertIcon
                         });
@@ -104,6 +108,12 @@
                 });
             }
         }
+    }
+
+    function removeHighlight() {
+        var cur = document.querySelector(".trade-body[style*='background-color: lime']");
+        if (cur)
+            cur.style.backgroundColor = "";
     }
 
     function showStatus() {
@@ -123,7 +133,8 @@
         var listingsPage = /^http:\/\/www\.trade\.tf\/listings\/\d+$/.test(document.URL),
             alertIcon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/e6/" +
                         "e6ff6859b1c96e923a5051d54ee1f6e35c45094b_full.jpg",
-            alertSound = "https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav";
+            alertSound = "https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav",
+            modal;
         /****** END SCRIPT GLOBALS ******/
 
         var style = document.querySelector("[href*='font-awesome']");
