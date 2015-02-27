@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.3.0
+// @version             1.2.3.1
 // ==/UserScript==
 
 (function () {
@@ -25,15 +25,14 @@
         button.addEventListener("click", () => {
             var stat = !JSON.parse(sessionStorage.getItem(prop));
             sessionStorage.setItem(prop, stat);
+            button.classList.toggle("btn-danger", !stat);
+            button.classList.toggle("btn-success", stat);
+            button.firstElementChild.classList.toggle("fa-toggle-off", !stat);
+            button.firstElementChild.classList.toggle("fa-toggle-on", stat);
             if (prop === "paused")
                 location.reload();
-            else {
-                button.classList.toggle("btn-danger", !stat);
-                button.classList.toggle("btn-success", stat);
-                button.firstElementChild.classList.toggle("fa-toggle-off", !stat);
-                button.firstElementChild.classList.toggle("fa-toggle-on", stat);
+            else
                 filter();
-            }
         });
         button.appendChild(createIcon(`toggle-${activated ? "on" : "off"}`, "border: none;"));
         button.appendChild(document.createTextNode(val));
@@ -95,7 +94,7 @@
                         loc = vis.querySelector("[href^='/r/trade']").childNodes[2].textContent,
                         comp = vis.querySelector("div.trade-profit").getAttribute("data-original-title")
                                                                     .split(/(?:<br\/>|<\/u>)/),
-                        msg = `${amt || 0}%${loc}\n[Value]${comp[1]} [Wants]${comp[3]}`;
+                        msg = `${amt || 0}%${loc}\n[V]${comp[1]} [W]${comp[3]}`;
                     if (permission === "granted") {
                         modal = new Notification("Trade.tf Enhancer", {
                             body: msg,
