@@ -8,7 +8,7 @@
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.3.1
+// @version             1.2.3.2
 // ==/UserScript==
 
 (function () {
