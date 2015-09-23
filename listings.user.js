@@ -136,6 +136,18 @@
             modal;
         /****** END SCRIPT GLOBALS ******/
 
+        var style = document.querySelector("[href*='font-awesome']");
+        style.href = style.href.replace("3.2.1", "4.3.0");
+        Array.prototype.forEach.call(document.querySelectorAll("[class*='icon']"), e => {
+            e.classList.add("fa");
+            [["-check", "-check-square-o"],
+             ["-info-sign", "-info-circle"],
+             ["-ok-circle", "-check-circle-o"],
+             ["-time", "-clock-o"],
+             ["-white", "-inverse"],
+             [/icon/g, "fa"]].forEach(f => e.className = e.className.replace(...f));
+        });
+
         if (listingsPage) {
             var input = document.createElement("a"),
                 style = document.createElement("style"),
