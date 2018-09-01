@@ -2,13 +2,13 @@
 // @copyright           ©2014 - 2015, Damian Ho
 // @description         Helper script for Trade.tf
 // @downloadURL         https://bitbucket.org/damianhxy/trade.tf-enhancer/raw/master/listings.user.js
-// @include             /^http:\/\/www\.trade\.tf.*$/
-// @exclude             /^http:\/\/www\.trade\.tf\/user\/mybot\/trades\/\d{17}\/offer$/
+// @include             /^https:\/\/www\.trade\.tf.*$/
+// @exclude             /^https:\/\/www\.trade\.tf\/user\/mybot\/trades\/\d{17}\/offer$/
 // @name                Trade.tf Enhancer
 // @namespace           https://bitbucket.org/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.3.2
+// @version             1.2.3.3
 // ==/UserScript==
 
 (function () {
@@ -129,7 +129,7 @@
 
     try {
         /******** SCRIPT GLOBALS ********/
-        var listingsPage = /^http:\/\/www\.trade\.tf\/listings\/\d+$/.test(document.URL),
+        var listingsPage = /^https:\/\/www\.trade\.tf\/listings\/\d+$/.test(document.URL),
             alertIcon = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/e6/" +
                         "e6ff6859b1c96e923a5051d54ee1f6e35c45094b_full.jpg",
             alertSound = "https://wiki.teamfortress.com/w/images/5/50/Notification_alert.wav",
