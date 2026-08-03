@@ -1,17 +1,22 @@
 // ==UserScript==
-// @copyright           ©2014 - 2015, Damian Ho
+// @copyright           ©2014-2026, Damian Ho
 // @description         Helper script for Trade.tf
-// @downloadURL         https://bitbucket.org/damianhxy/trade.tf-enhancer/raw/master/listings.user.js
-// @include             /^https:\/\/www\.trade\.tf.*$/
-// @exclude             /^https:\/\/www\.trade\.tf\/user\/mybot\/trades\/\d{17}\/offer$/
+// @downloadURL         https://raw.githubusercontent.com/damianhxy/trade.tf-enhancer/master/listings.user.js
+// @exclude             https://www.trade.tf/user/mybot/trades/*/offer
+// @grant               GM_info
+// @homepageURL         https://github.com/damianhxy/trade.tf-enhancer
+// @match               https://www.trade.tf/*
 // @name                Trade.tf Enhancer
-// @namespace           https://bitbucket.org/damianhxy
+// @namespace           https://github.com/damianhxy
 // @noframes
 // @run-at              document-end
-// @version             1.2.3.3
+// @supportURL          https://github.com/damianhxy/trade.tf-enhancer/issues
+// @updateURL           https://raw.githubusercontent.com/damianhxy/trade.tf-enhancer/master/listings.user.js
+// @version             1.3.0
 // ==/UserScript==
 
 (function () {
+    "use strict";
     /*********** SETTINGS ***********/
     let reloadTime = 15;
     /******** END OF SETTINGS *******/
@@ -87,7 +92,7 @@
     function highlight() {
         const vis = document.querySelector(".trade:not([style*='display: none'])");
         if (!vis) return;
-        const trade = vis.querySelector("[href]").href.slice(28, 37);
+        const trade = new URL(vis.querySelector("[href]").href).pathname.split("/").pop();
         if (sessionStorage.getItem("latest") === trade) return;
         sessionStorage.setItem("latest", trade);
         removeHighlight();
@@ -204,7 +209,7 @@
             intervalId = setInterval(showStatus, 1000);
         }
         console.info(`Trade.tf Script Loaded. Version ${GM_info.script.version}`);
-    } catch(e) {
+    } catch (e) {
         console.error(`[Trade.tf Enhancer Error]\n${e.message}\n[Stack Trace]\n${e.stack}`);
     }
 })();
