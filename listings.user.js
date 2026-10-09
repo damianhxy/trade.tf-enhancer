@@ -48,11 +48,9 @@
     }
 
     function check(element, toggle, query, content) {
-        if (!getBool(toggle)) {
-            const ele = element.querySelector(`.${query}`);
-            if (ele)
-                return content ? ele.textContent.includes(content) : true;
-        }
+        if (!getBool(toggle))
+            return [...element.querySelectorAll(`.${query}`)]
+                .some(ele => content ? ele.textContent.includes(content) : true);
         return false;
     }
 
