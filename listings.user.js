@@ -92,14 +92,14 @@
     function highlight() {
         const vis = document.querySelector(".trade:not([style*='display: none'])");
         if (!vis) return;
-        const trade = new URL(vis.querySelector("[href]").href).pathname.split("/").pop();
+        const trade = new URL(vis.querySelector(".trade-header-title-date [href]").href).pathname.split("/").pop();
         if (sessionStorage.getItem("latest") === trade) return;
         sessionStorage.setItem("latest", trade);
         removeHighlight();
         vis.lastElementChild.style.backgroundColor = "lime";
         Notification.requestPermission().then(permission => {
             const amt = vis.querySelector("span.trade-profit").textContent.match(/-?(?:\d+\.)?\d+?/);
-            const loc = vis.querySelector("[href^='/r/trade']").childNodes[2].textContent;
+            const loc = vis.querySelector(".trade-header-title-name a").childNodes[2].textContent;
             const comp = vis.querySelector("div.trade-profit").getAttribute("data-original-title")
                                                               .split(/(?:<br\/>|<\/u>)/);
             const msg = `${amt || 0}%${loc}\n[V]${comp[1]} [W]${comp[3]}`;
